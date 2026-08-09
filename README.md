@@ -1,8 +1,34 @@
-# Ganeshotsav Radio · गणेशोत्सव
+# GaneshAI · गणेशोत्सव Radio
 
 > A little mandap on the internet: Marathi festival nostalgia, dhol-tasha energy, and one beautifully simple radio screen.
 
-[Open Ganeshotsav Radio](https://ganeshai.vercel.app/) · [View the source](https://github.com/mangeshraut712/ganeshotsav-radio) · [Follow Mangesh Raut](https://github.com/mangeshraut712)
+<p align="center">
+  <a href="https://ganeshai.vercel.app/"><img src="https://img.shields.io/badge/Live%20experience-ganeshai.vercel.app-c2410c?style=for-the-badge&logo=vercel&logoColor=white" alt="Open the live GaneshAI experience" /></a>
+  <a href="https://github.com/mangeshraut712/ganeshai"><img src="https://img.shields.io/badge/GitHub-ganeshai-171717?style=for-the-badge&logo=github&logoColor=white" alt="View GaneshAI on GitHub" /></a>
+  <img src="https://img.shields.io/badge/Buildless-static%20web-f59e0b?style=for-the-badge" alt="Buildless static web project" />
+</p>
+
+<p align="center">
+  <a href="https://ganeshai.vercel.app/">Open the live experience</a> ·
+  <a href="https://github.com/mangeshraut712/ganeshai">View the source</a> ·
+  <a href="https://github.com/mangeshraut712">Follow Mangesh Raut</a>
+</p>
+
+## Home preview
+
+<p align="center">
+  <img src="docs/home-preview.png" alt="GaneshAI desktop home screen with Ganesh festival artwork and liquid-glass music player" width="100%" />
+</p>
+
+<p align="center"><em>Ganeshotsav Radio — a little mandap on the internet.</em></p>
+
+<details>
+  <summary><strong>View the mobile composition</strong></summary>
+  <br />
+  <p align="center">
+    <img src="docs/home-preview-mobile.png" alt="GaneshAI mobile home screen with compact music player" width="320" />
+  </p>
+</details>
 
 ## The story
 
@@ -10,7 +36,11 @@ Ganesh Chaturthi is remembered through small, familiar details: the first drumbe
 
 Ganeshotsav Radio turns that feeling into a single-screen web experience. It brings together a warm Ganesh festival illustration, a Devanagari title, a compact liquid-glass player, and a hand-curated queue of Marathi aartis, bhajans, and procession songs. The goal is deliberately modest: open one page, press play, and feel instantly at home.
 
-This 2026 edition is a static, browser-first project built for the web rather than a full music platform. YouTube supplies the playback, while the page supplies the atmosphere, controls, and memory.
+This 2026 edition is a static, browser-first project built for the web rather than a full music platform. YouTube supplies the playback, while the page supplies the atmosphere, controls, and memory. The “AI” in **GaneshAI** is a playful identity for a modern, always-on experience; this repository does not pretend to be an AI-generated music service.
+
+## Why GaneshAI
+
+The name keeps the heart of the festival in the first word and gives the project a contemporary edge in the second. It is memorable, searchable, and honest about the product: a thoughtful digital experience around Ganeshotsav, with the music source left visible and the interface doing the storytelling.
 
 ## What is included
 
@@ -44,7 +74,7 @@ The generic visual language was replaced with a Ganeshotsav palette, mandap ligh
 
 ### 10 August 2026 — Public 2026 release
 
-The release locked `Ya Re Ya` as the opener, expanded the queue to 16 curated festival songs, corrected the Spotify and YouTube Music brand treatments, added the Mangesh Raut GitHub credit, and published the site on Vercel. The repository was then rebranded as `ganeshotsav-radio` with focused GitHub topics and a release README.
+The release locked `Ya Re Ya` as the opener, expanded the queue to 16 curated festival songs, corrected the Spotify and YouTube Music brand treatments, added the Mangesh Raut GitHub credit, and published the site on Vercel. The repository was then rebranded as `ganeshai` with focused GitHub topics, a release README, and visual home previews.
 
 ## How it works
 
@@ -78,6 +108,8 @@ Opening `index.html` directly with a `file://` URL is not recommended because br
 | `ganesh logo.png` | Ganesh logo used for the favicon and touch icon |
 | `docs/superpowers/` | Design brief and implementation history for the 2026 build |
 | `CHANGELOG.md` | Release-level project history |
+| `docs/home-preview.png` | Desktop README preview captured from the verified home screen |
+| `docs/home-preview-mobile.png` | Mobile README preview captured at 390 px |
 
 ## Curate the queue
 

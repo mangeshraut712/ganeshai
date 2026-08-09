@@ -121,7 +121,7 @@
     el.cover.src = thumb(song.youtubeId);
     el.cover.alt = `${song.title} cover art`;
     el.openYt.href = ytWatch(song.youtubeId);
-    document.title = `${song.title} · Ganeshotsav Radio`;
+    document.title = `${song.title} · GaneshAI Radio`;
     highlightQueue();
   }
 
