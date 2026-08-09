@@ -1,5 +1,5 @@
 /**
- * 25 Ganesh Chaturthi bangers, dhol-tasha cuts, and aarti staples.
+ * 30 Ganesh Chaturthi bangers, dhol-tasha cuts, and aarti staples.
  * Playback is always via YouTube (video IDs only — no audio files hosted here).
  * The order is intentional: Ya Re Ya opens the mandap, then the queue moves
  * through procession energy, Marathi classics, aartis, and mantras.
@@ -179,5 +179,40 @@ window.GANESH_SONGS = [
     title: "Shree Ganeshay Dheemahi",
     artist: "Ajay-Atul · Shankar Mahadevan",
     album: "Vishwa Vinayak",
+  },
+  {
+    id: "HE5SE4farrQ",
+    youtubeId: "HE5SE4farrQ",
+    title: "Maza Bappa Aala",
+    artist: "Zee Music Marathi",
+    album: "Ganpati Aagman",
+  },
+  {
+    id: "cGcw33hVrS4",
+    youtubeId: "cGcw33hVrS4",
+    title: "Bappa",
+    artist: "Vishal & Shekhar · Vishal Dadlani",
+    album: "Banjo",
+  },
+  {
+    id: "KJF8t-BWVRM",
+    youtubeId: "KJF8t-BWVRM",
+    title: "Gajanana",
+    artist: "Sukhwinder Singh",
+    album: "Bajirao Mastani",
+  },
+  {
+    id: "VJPLXBvV4qQ",
+    youtubeId: "VJPLXBvV4qQ",
+    title: "Ganapati Tu Sarvashreshth",
+    artist: "Adesh Karwarkar",
+    album: "Marathi Ganpati Song",
+  },
+  {
+    id: "_jiTr71_X8c",
+    youtubeId: "_jiTr71_X8c",
+    title: "Ganpati Mantra",
+    artist: "Shankar Mahadevan",
+    album: "Ganesh Pancharatna Stotra",
   },
 ];

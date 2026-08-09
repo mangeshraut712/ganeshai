@@ -101,25 +101,29 @@
           </div>
 
           <div class="controls" aria-label="Playback controls">
-            <button type="button" class="ctrl ctrl-quiet" id="shuffle" aria-pressed="false" aria-label="Turn shuffle on" title="Shuffle">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M15 15l6 6m0-5v5h-5M4 4l5 5" /></svg>
-            </button>
-            <button type="button" class="ctrl" id="prev" aria-label="Previous track" title="Previous track">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" /></svg>
-            </button>
-            <button type="button" class="ctrl ctrl-play" id="play" aria-label="Play" title="Play">
+            <div class="control-cluster control-cluster-start">
+              <button type="button" class="ctrl ctrl-quiet" id="shuffle" aria-pressed="false" aria-label="Turn shuffle on" title="Shuffle">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M15 15l6 6m0-5v5h-5M4 4l5 5" /></svg>
+              </button>
+              <button type="button" class="ctrl" id="prev" aria-label="Previous track" title="Previous track">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" /></svg>
+              </button>
+            </div>
+            <button type="button" class="ctrl ctrl-play" id="play" aria-busy="false" aria-label="Play" title="Play">
               <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7L8 5z" /></svg>
               <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" /></svg>
             </button>
-            <button type="button" class="ctrl" id="next" aria-label="Next track" title="Next track">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z" /></svg>
-            </button>
-            <a class="ctrl ctrl-link" id="openYt" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Open current song on YouTube" title="Open current song on YouTube">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zM5 5v14h14v-7h-2v5H7V7h5V5H5z" /></svg>
-            </a>
-            <button type="button" class="ctrl ctrl-link" id="queueBtn" aria-expanded="false" aria-controls="queue" aria-label="Show playlist" title="Show playlist">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" /></svg>
-            </button>
+            <div class="control-cluster control-cluster-end">
+              <button type="button" class="ctrl" id="next" aria-label="Next track" title="Next track">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z" /></svg>
+              </button>
+              <a class="ctrl ctrl-link" id="openYt" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Open current song on YouTube" title="Open current song on YouTube">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zM5 5v14h14v-7h-2v5H7V7h5V5H5z" /></svg>
+              </a>
+              <button type="button" class="ctrl ctrl-link" id="queueBtn" aria-expanded="false" aria-controls="queue" aria-label="Show playlist" title="Show playlist">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" /></svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>

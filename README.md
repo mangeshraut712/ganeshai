@@ -47,7 +47,7 @@ The name keeps the heart of the festival in the first word and gives the project
 - Full-viewport Ganeshotsav artwork with dark readability overlays and restrained festive motion.
 - A focused Marathi hero title: `गणेश महोत्सव`.
 - A liquid-glass music card with cover art, progress scrubbing, play/pause, previous/next, shuffle, YouTube, and playlist controls.
-- A hidden-by-default “mandap queue” with 25 Ganesh festival tracks.
+- A hidden-by-default “mandap queue” with 30 Ganesh festival tracks.
 - `Ya Re Ya` as the intentional opening track; shuffle is always a user action.
 - Responsive layouts tested at desktop and narrow mobile widths, including 320 px.
 - Spotify and YouTube Music entry points for continuing the listening session on the original platforms.
@@ -76,6 +76,10 @@ The generic visual language was replaced with a Ganeshotsav palette, mandap ligh
 
 The release locked `Ya Re Ya` as the opener, expanded the queue to 25 curated festival songs, corrected the Spotify and YouTube Music brand treatments, added the Mangesh Raut GitHub credit, and published the site on Vercel. The repository was then rebranded as `ganeshai` with focused GitHub topics, a release README, and visual home previews.
 
+### 10 August 2026 — Alignment and thirty-track listening run
+
+The player control rail was rebuilt around a three-column primary-action grid so the play button shares a true centerline on desktop and mobile. The queue now continues with five additional non-duplicate singles—`Maza Bappa Aala`, `Bappa`, `Gajanana`, `Ganapati Tu Sarvashreshth`, and `Ganpati Mantra`—for a 30-track run. Buffering now has an explicit loading state, while repeated YouTube errors are guarded so a single failed embed cannot skip twice.
+
 ## How it works
 
 1. `index.html` defines the semantic page shell, player controls, source links, queue disclosure, and metadata.
@@ -103,7 +107,7 @@ Opening `index.html` directly with a `file://` URL is not recommended because br
 | `index.html` | Semantic page shell, metadata, source links, player, and queue markup |
 | `styles.css` | Festival visual system, responsive rules, glass player, and accessibility states |
 | `app.js` | YouTube API integration and player interaction logic |
-| `songs.js` | 25-track Ganeshotsav queue and YouTube metadata |
+| `songs.js` | 30-track Ganeshotsav queue and YouTube metadata |
 | `ganesh background.png` | Active full-bleed Ganesh festival background |
 | `ganesh logo.png` | Ganesh logo used for the favicon and touch icon |
 | `docs/superpowers/` | Design brief and implementation history for the 2026 build |
@@ -152,7 +156,7 @@ node --check app.js
 node --check songs.js
 ```
 
-The page was also opened through a local HTTP server and checked in a real browser at 1440×900, 390×844, and 320×844. The page had no horizontal overflow, the opener was `Ya Re Ya`, and the 25-song queue opened without breaking the layout.
+The page was also opened through a local HTTP server and checked in a real browser at 1440×900, 390×844, and 320×844. The page had no horizontal overflow, the play button shared the control rail centerline, the opener was `Ya Re Ya`, and all 30 queue transitions matched their expected YouTube IDs before wrapping back to the opener.
 
 ## Design notes and credits
 

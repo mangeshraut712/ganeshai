@@ -671,10 +671,26 @@ body.is-playing .equalizer i:nth-child(3) { animation-delay: -560ms; }
 }
 
 .controls {
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  justify-content: normal;
+  gap: 0;
+  width: 210px;
+}
+
+.control-cluster {
   display: flex;
   align-items: center;
-  justify-content: end;
-  gap: 3px;
+  gap: 1px;
+}
+
+.control-cluster-start {
+  justify-content: flex-end;
+}
+
+.control-cluster-end {
+  justify-content: flex-start;
 }
 
 .ctrl {
@@ -682,6 +698,8 @@ body.is-playing .equalizer i:nth-child(3) { animation-delay: -560ms; }
   width: 32px;
   height: 32px;
   place-items: center;
+  flex: 0 0 auto;
+  line-height: 0;
   border-radius: 50%;
   background: transparent;
   color: rgba(255, 245, 232, 0.68);
@@ -690,6 +708,7 @@ body.is-playing .equalizer i:nth-child(3) { animation-delay: -560ms; }
 }
 
 .ctrl svg {
+  display: block;
   width: 15px;
   height: 15px;
   fill: currentColor;
@@ -717,7 +736,8 @@ body.is-playing .equalizer i:nth-child(3) { animation-delay: -560ms; }
 .ctrl-play {
   width: 40px;
   height: 40px;
-  margin: 0 2px;
+  position: relative;
+  margin: 0;
   color: var(--ink);
   background: var(--cream);
   box-shadow: 0 5px 16px rgba(0, 0, 0, 0.28), 0 0 16px rgba(255, 245, 232, 0.13);
@@ -749,6 +769,29 @@ body.is-playing .equalizer i:nth-child(3) { animation-delay: -560ms; }
   color: var(--ink);
   background: #fff;
   transform: scale(1.06);
+}
+
+.ctrl-play[data-buffering="true"] {
+  cursor: progress;
+}
+
+.ctrl-play[data-buffering="true"] svg {
+  opacity: 0;
+}
+
+.ctrl-play[data-buffering="true"]::before {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(16, 6, 7, 0.2);
+  border-top-color: var(--saffron);
+  border-radius: 50%;
+  animation: player-spin 800ms linear infinite;
+  content: "";
+}
+
+@keyframes player-spin {
+  to { transform: rotate(360deg); }
 }
 
 .player-footer {
@@ -1099,10 +1142,27 @@ body.is-playing .equalizer i:nth-child(3) { animation-delay: -560ms; }
   }
 
   .controls {
+    display: grid;
     grid-column: 1 / -1;
-    justify-content: center;
-    gap: 6px;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    justify-content: normal;
+    width: 100%;
+    gap: 10px;
     padding-top: 1px;
+  }
+
+  .control-cluster {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .control-cluster-start {
+    justify-content: flex-end;
+  }
+
+  .control-cluster-end {
+    justify-content: flex-start;
   }
 
   .ctrl {

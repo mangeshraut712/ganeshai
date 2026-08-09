@@ -49,6 +49,7 @@
   let progressTimer = null;
   let dragging = false;
   let toastTimer = null;
+  let skipTimer = null;
   let userStarted = false;
 
   // Skip quiet intros on some aartis a bit — still starts near beginning
@@ -127,10 +128,21 @@
 
   function setPlayingUI(isPlaying) {
     playing = isPlaying;
+    setBufferingUI(false);
     el.play.classList.toggle("is-playing", isPlaying);
     el.play.setAttribute("aria-label", isPlaying ? "Pause" : "Play");
     el.play.title = isPlaying ? "Pause" : "Play";
     document.body.classList.toggle("is-playing", isPlaying);
+  }
+
+  function setBufferingUI(isBuffering) {
+    document.body.classList.toggle("is-buffering", isBuffering);
+    el.play.setAttribute("aria-busy", String(isBuffering));
+    if (isBuffering) {
+      el.play.dataset.buffering = "true";
+    } else {
+      delete el.play.dataset.buffering;
+    }
   }
 
   function setProgress(current, duration) {
@@ -285,6 +297,7 @@
         playNext(true);
         break;
       case S.BUFFERING:
+        setBufferingUI(true);
         break;
       case S.CUED:
         setPlayingUI(false);
@@ -297,13 +310,23 @@
   function onPlayerError(event) {
     // 2=invalid id, 5=html5, 100=not found, 101/150=embed not allowed
     console.warn("YouTube error", event.data);
+    setPlayingUI(false);
+    if (skipTimer) return;
     showToast("This track can’t play here — skipping…");
-    setTimeout(() => playNext(true), 700);
+    skipTimer = setTimeout(() => {
+      skipTimer = null;
+      playNext(true);
+    }, 700);
   }
 
   function loadAndPlay(autoplay) {
     const song = currentSong();
     if (!song || !player) return;
+    if (skipTimer) {
+      clearTimeout(skipTimer);
+      skipTimer = null;
+    }
+    setBufferingUI(false);
     updateMeta(song);
     setProgress(0, 0);
 

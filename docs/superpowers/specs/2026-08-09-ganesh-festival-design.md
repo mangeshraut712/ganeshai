@@ -21,11 +21,12 @@ The page uses the repository's original Ganesh-specific assets rather than copyi
 
 ## Interaction and accessibility
 
-- Preserve current YouTube API behavior and the curated 25-track playlist, with `Ya Re Ya` as the deterministic opening track.
+- Preserve current YouTube API behavior and the curated 30-track playlist, with `Ya Re Ya` as the deterministic opening track.
 - Preserve click/tap play, previous/next, shuffle, playlist toggle, YouTube link, cover click, seek dragging, spacebar play/pause, and left/right track navigation.
 - Keep the hidden player accessible only to the browser, not visible as a second UI.
 - Retain visible focus states, semantic labels, `aria-pressed`, `aria-expanded`, and reduced-motion behavior.
 - Keep the player usable at 320px wide and at desktop widths up to 1440px.
+- Keep the play action centered within its control rail at desktop and mobile widths.
 
 ## Acceptance checks
 

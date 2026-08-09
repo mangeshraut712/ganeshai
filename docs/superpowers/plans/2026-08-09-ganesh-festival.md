@@ -94,3 +94,4 @@
 - 9 August 2026: single-screen festival shell, local artwork, compact player, queue, and responsive visual system implemented.
 - 10 August 2026: deterministic `Ya Re Ya` opener, initial 16-track queue, brand-link cleanup, browser verification, GitHub publication, and Vercel production release completed.
 - 10 August 2026: queue expanded from 16 to 25 unique Ganpati/Ganesha tracks after source verification.
+- 10 August 2026: control rail alignment was corrected, buffering/error transitions were hardened, and the queue expanded from 25 to 30 unique Ganpati/Ganesha tracks after source verification.
