@@ -78,7 +78,7 @@ The release locked `Ya Re Ya` as the opener, expanded the queue to 25 curated fe
 
 ### 10 August 2026 — Alignment and thirty-track listening run
 
-The player control rail was rebuilt around a three-column primary-action grid so the play button shares a true centerline on desktop and mobile. The queue now continues with five additional non-duplicate singles—`Maza Bappa Aala`, `Bappa`, `Gajanana`, `Ganapati Tu Sarvashreshth`, and `Ganpati Mantra`—for a 30-track run. Buffering now has an explicit loading state, while repeated YouTube errors are guarded so a single failed embed cannot skip twice.
+The player control rail was rebuilt around a three-column primary-action grid so the play button shares a true centerline on desktop and mobile. The queue now continues with five additional non-duplicate singles—`Maza Bappa Aala`, `Bappa`, `Gajanana`, `Ganapati Tu Sarvashreshth`, and `Ganpati Tu Gunapati Tu`—for a 30-track run. Every source was then checked through the real YouTube player; non-embeddable videos were replaced with playable festival singles. Buffering now has an explicit loading state, while repeated YouTube errors are guarded so a single failed embed cannot skip twice.
 
 ## How it works
 

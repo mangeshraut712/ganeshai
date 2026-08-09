@@ -7,18 +7,20 @@ All notable project milestones are recorded here. Dates use the India Standard T
 ### Added
 
 - 5 additional non-duplicate Ganpati/Ganesha singles, expanding the listening run from 25 to 30 songs.
-- `Maza Bappa Aala`, `Bappa`, `Gajanana`, `Ganapati Tu Sarvashreshth`, and `Ganpati Mantra` from official or artist-published YouTube sources.
+- `Maza Bappa Aala`, `Bappa`, `Gajanana`, `Ganapati Tu Sarvashreshth`, and `Ganpati Tu Gunapati Tu` from official or artist-published YouTube sources.
 
 ### Improved
 
 - Centered the primary play action inside a balanced control rail on desktop and mobile.
 - Added a visible buffering state and guarded YouTube error skipping against duplicate callbacks.
+- Replaced non-embeddable legacy video IDs with individually checked Ganpati singles so the queue does not silently skip during normal playback.
 - Kept the queue order deterministic with `Ya Re Ya` as track 1 and the new songs closing the 30-track run.
 
 ### Verified
 
 - All 30 YouTube IDs are unique.
 - Browser transition audit matched every expected title and video ID across 30 next-track actions, then wrapped to `Ya Re Ya`.
+- Slower per-track browser audit kept all 30 selected tracks in the playing state with zero source mismatches.
 - Desktop and mobile layouts remained free of horizontal overflow.
 
 ## [2026.08.10] — 25-song queue expansion

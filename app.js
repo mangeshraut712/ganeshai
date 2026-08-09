@@ -309,7 +309,7 @@
 
   function onPlayerError(event) {
     // 2=invalid id, 5=html5, 100=not found, 101/150=embed not allowed
-    console.warn("YouTube error", event.data);
+    console.warn("YouTube error", event.data, currentSong()?.title, currentSong()?.youtubeId);
     setPlayingUI(false);
     if (skipTimer) return;
     showToast("This track can’t play here — skipping…");
