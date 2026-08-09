@@ -1,6 +1,8 @@
 /**
- * Ganesh Chaturthi bangers, dhol-tasha cuts, and aarti staples.
+ * 25 Ganesh Chaturthi bangers, dhol-tasha cuts, and aarti staples.
  * Playback is always via YouTube (video IDs only — no audio files hosted here).
+ * The order is intentional: Ya Re Ya opens the mandap, then the queue moves
+ * through procession energy, Marathi classics, aartis, and mantras.
  */
 window.GANESH_SONGS = [
   {
@@ -114,5 +116,68 @@ window.GANESH_SONGS = [
     title: "Gan Gan Ganat Bote",
     artist: "Traditional · Gajanan Maharaj",
     album: "Marathi Devotional",
+  },
+  {
+    id: "J0uvj4Y_emA",
+    youtubeId: "J0uvj4Y_emA",
+    title: "Aala Re Aala Ganpati",
+    artist: "Sachin · Suresh Wadkar",
+    album: "Amachya Sarkhe Aamicha",
+  },
+  {
+    id: "esBHy_ky-PQ",
+    youtubeId: "esBHy_ky-PQ",
+    title: "Dhol Dhol (Morya Morya)",
+    artist: "Adarsh Shinde",
+    album: "Me Yetoy… Chhota Pudhari",
+  },
+  {
+    id: "fMHIN0KIoCs",
+    youtubeId: "fMHIN0KIoCs",
+    title: "Pratham Tula Vandito",
+    artist: "Suresh Bapat · Madhuri Mahajan",
+    album: "Bappa Morya Re",
+  },
+  {
+    id: "N4Ilw97aKn0",
+    youtubeId: "N4Ilw97aKn0",
+    title: "Tuz Magato Mee Aata",
+    artist: "Lata Mangeshkar",
+    album: "Ganesh Bhajan",
+  },
+  {
+    id: "lae0Lue9exk",
+    youtubeId: "lae0Lue9exk",
+    title: "Shree Ganpatichi Aarti",
+    artist: "Lata Mangeshkar",
+    album: "Essential Ganesha",
+  },
+  {
+    id: "kmmmZn4cQmU",
+    youtubeId: "kmmmZn4cQmU",
+    title: "Ghalin Lotangan",
+    artist: "Ajay-Atul",
+    album: "Ganesh Aarti",
+  },
+  {
+    id: "2ZkOuT26buk",
+    youtubeId: "2ZkOuT26buk",
+    title: "Om Gan Ganpatye Namo Namah",
+    artist: "Suresh Wadkar",
+    album: "Ganesh Mantra",
+  },
+  {
+    id: "OOWveA63cjI",
+    youtubeId: "OOWveA63cjI",
+    title: "Ganesh Tandav Stotram",
+    artist: "Shankar Mahadevan · Shailesh Dani",
+    album: "Ganesh Utsav 2025",
+  },
+  {
+    id: "wCgrmd9mDxE",
+    youtubeId: "wCgrmd9mDxE",
+    title: "Shree Ganeshay Dheemahi",
+    artist: "Ajay-Atul · Shankar Mahadevan",
+    album: "Vishwa Vinayak",
   },
 ];

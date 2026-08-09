@@ -2,11 +2,24 @@
 
 All notable project milestones are recorded here. Dates use the India Standard Time release context for the 2026 build.
 
+## [2026.08.10] — 25-song queue expansion
+
+### Added
+
+- 9 additional non-duplicate Ganpati/Ganesha tracks, expanding the listening run from 16 to 25 songs.
+- More procession energy, Marathi classics, aarti staples, and Ganesh mantras from verified YouTube sources.
+
+### Verified
+
+- `Ya Re Ya` remains track 1.
+- All 25 YouTube IDs are unique.
+- The queue renders all 25 entries without mobile or desktop overflow.
+
 ## [2026.08.10] — Ganeshotsav Radio public release
 
 ### Added
 
-- 16-track Ganeshotsav queue with `Ya Re Ya` as the intentional opener.
+- Initial 16-track Ganeshotsav queue with `Ya Re Ya` as the intentional opener.
 - Spotify playlist and YouTube festival-radio links.
 - Responsive liquid-glass player and hidden-by-default mandap queue.
 - Ganesh background, logo, favicon, Marathi title, and Mangesh Raut GitHub credit.
