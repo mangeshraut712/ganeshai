@@ -2,7 +2,7 @@
 
 > A little mandap on the internet: Marathi festival nostalgia, dhol-tasha energy, and one beautifully simple radio screen.
 
-[Open Ganeshotsav Radio](https://ganesh-sooty.vercel.app/) · [View the source](https://github.com/mangeshraut712/ganeshotsav-radio) · [Follow Mangesh Raut](https://github.com/mangeshraut712)
+[Open Ganeshotsav Radio](https://ganeshai.vercel.app/) · [View the source](https://github.com/mangeshraut712/ganeshotsav-radio) · [Follow Mangesh Raut](https://github.com/mangeshraut712)
 
 ## The story
 
@@ -109,7 +109,7 @@ The project has no build step. To deploy the current directory to Vercel:
 vercel deploy . --prod
 ```
 
-The current production site is [ganesh-sooty.vercel.app](https://ganesh-sooty.vercel.app/).
+The current production site is [ganeshai.vercel.app](https://ganeshai.vercel.app/).
 
 ## Verification
 
