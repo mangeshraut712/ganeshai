@@ -8,7 +8,7 @@ Turn the existing Ganeshotsav Radio prototype into a single-screen Ganesh festiv
 
 The current YouTube-powered playlist remains the product's functional core. The redesign changes the presentation, not the playback model: YouTube still supplies audio, while the page owns the custom controls, track metadata, progress bar, shuffle state, and playlist disclosure.
 
-The page will use the repository's original Ganesh-specific assets rather than copying reference assets: `ganesh background.png` provides the warm illustrated shrine and crowd scene, `ganesh logo.png` supplies the hero mark and favicon, and the translucent player card sits over the artwork with readability overlays.
+The page uses the repository's original Ganesh-specific assets rather than copying reference assets: `ganesh background.png` provides the warm illustrated shrine and crowd scene, while `ganesh logo.png` supplies the favicon and touch icon. The hero title is rendered as separate Devanagari text so it stays readable and responsive over the artwork; the translucent player card sits below it with readability overlays.
 
 ## Layout
 
@@ -21,7 +21,7 @@ The page will use the repository's original Ganesh-specific assets rather than c
 
 ## Interaction and accessibility
 
-- Preserve current YouTube API behavior and all existing playlist data.
+- Preserve current YouTube API behavior and the curated 16-track playlist, with `Ya Re Ya` as the deterministic opening track.
 - Preserve click/tap play, previous/next, shuffle, playlist toggle, YouTube link, cover click, seek dragging, spacebar play/pause, and left/right track navigation.
 - Keep the hidden player accessible only to the browser, not visible as a second UI.
 - Retain visible focus states, semantic labels, `aria-pressed`, `aria-expanded`, and reduced-motion behavior.
@@ -38,4 +38,8 @@ The page will use the repository's original Ganesh-specific assets rather than c
 
 ## Screenshot refinement
 
-The supplied reference screenshots establish a more specific visual target for the final pass: a colorful, wide festival scene; minimal edge metadata instead of a branded header; a very large original Ganeshotsav logo; a short centered tagline; and one wide, low-profile player card anchored close to the bottom edge. The Ganesh version follows that hierarchy while keeping the reference site's controls available through compact icon actions and credits Mangesh Raut through the linked GitHub profile.
+The supplied reference screenshots establish a more specific visual target for the final pass: a colorful, wide festival scene; minimal edge metadata instead of a branded header; a restrained Devanagari title; a short centered festival message; and one wide, low-profile player card anchored close to the bottom edge. The Ganesh version follows that hierarchy while keeping the reference site's controls available through compact icon actions and crediting Mangesh Raut through the linked GitHub profile.
+
+## 2026 release baseline
+
+The final implementation is intentionally buildless and local-asset-first. It keeps playback on YouTube, keeps the festival queue transparent in `songs.js`, and uses no framework, database, analytics backend, or locally stored music files.
