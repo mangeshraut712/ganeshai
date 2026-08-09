@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#110607" />
+  <meta name="description" content="Ganeshotsav Radio — a warm, always-on playlist of Ganpati aartis and festival songs." />
+  <meta property="og:title" content="Ganeshotsav Radio · गणपती बाप्पा मोरया" />
+  <meta property="og:description" content="A little mandap on the internet. Tune into Ganpati aartis and festival songs." />
+  <meta property="og:image" content="ganesh%20background.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>Ganeshotsav Radio · गणपती बाप्पा मोरया</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Noto+Sans+Devanagari:wght@500;700;800&family=Yatra+One&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="ganesh%20logo.png" />
+  <link rel="apple-touch-icon" href="ganesh%20logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop-photo"></div>
+    <div class="backdrop-wash"></div>
+    <div class="backdrop-glow glow-left"></div>
+    <div class="backdrop-glow glow-right"></div>
+    <div class="backdrop-rays"></div>
+    <div class="grain"></div>
+    <div class="petals" id="petals"></div>
+  </div>
+
+  <header class="topbar">
+    <time class="clock" id="clock" datetime="">9:31 PM</time>
+
+    <div class="presence" id="presence" title="Listeners online">
+      <span class="presence-dot" aria-hidden="true"></span>
+      <span id="onlineCount">1</span> online
+    </div>
+
+    <nav class="source-links" aria-label="Listen on">
+      <a class="source-link source-link-spotify" href="https://open.spotify.com/playlist/1callCuTKdffC9PTur9f3S" target="_blank" rel="noopener noreferrer" aria-label="Open the Ganpati Marathi songs playlist on Spotify" title="Spotify">
+        <svg class="source-icon source-icon-spotify" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="source-icon-circle" cx="12" cy="12" r="10" />
+          <path class="source-icon-wave" d="M7 9.2c3.5-1.1 7.1-.8 10.3.7M7.5 12.4c2.9-.8 5.9-.5 8.8.7M8.4 15.4c2.4-.5 4.9-.2 7.2.8" />
+        </svg>
+        <span class="source-label">Spotify</span>
+        <span class="source-arrow" aria-hidden="true">↗</span>
+      </a>
+      <a class="source-link source-link-youtube" href="https://www.youtube.com/watch?v=HUxGk5gPggg&amp;list=RDHUxGk5gPggg&amp;start_radio=1" target="_blank" rel="noopener noreferrer" aria-label="Open the Ganesh festival radio on YouTube Music" title="YT Music">
+        <svg class="source-icon source-icon-youtube" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="source-icon-circle" cx="12" cy="12" r="10" />
+          <circle class="source-icon-ring" cx="12" cy="12" r="6.15" />
+          <path class="source-icon-play" d="m10 8.4 5.8 3.6-5.8 3.6z" />
+        </svg>
+        <span class="source-label">YT Music</span>
+        <span class="source-arrow" aria-hidden="true">↗</span>
+      </a>
+    </nav>
+  </header>
+
+  <main class="stage">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="hero-title">
+        <span class="hero-title-marathi" aria-hidden="true">गणेश<br />महोत्सव</span>
+        <span class="sr-only">Ganesh Mahotsav</span>
+      </h1>
+    </section>
+
+    <section class="player-zone" aria-label="Ganeshotsav music player">
+      <div class="player" id="player-card">
+        <div class="player-topline" aria-hidden="true"></div>
+        <div class="player-main">
+          <div class="cover-shell">
+            <div class="cover-halo" aria-hidden="true"></div>
+            <img id="cover" class="cover" src="https://images.unsplash.com/photo-1598188752015-ea786296f571?auto=format&amp;fit=crop&amp;w=240&amp;q=80" alt="Ganeshotsav cover art" width="56" height="56" draggable="false" />
+          </div>
+
+          <div class="track-info">
+            <h2 id="title" class="title">Tuning in to Bappa Radio…</h2>
+            <p id="artist" class="artist">Your aarti playlist is loading</p>
+
+            <div class="progress-block">
+              <button type="button" class="scrub" id="scrub" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="slider">
+                <span class="track" aria-hidden="true">
+                  <span class="fill" id="fill"></span>
+                  <span class="knob" id="knob"></span>
+                </span>
+              </button>
+              <div class="times">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls" aria-label="Playback controls">
+            <button type="button" class="ctrl ctrl-quiet" id="shuffle" aria-pressed="false" aria-label="Turn shuffle on" title="Shuffle">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M15 15l6 6m0-5v5h-5M4 4l5 5" /></svg>
+            </button>
+            <button type="button" class="ctrl" id="prev" aria-label="Previous track" title="Previous track">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" /></svg>
+            </button>
+            <button type="button" class="ctrl ctrl-play" id="play" aria-label="Play" title="Play">
+              <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7L8 5z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" /></svg>
+            </button>
+            <button type="button" class="ctrl" id="next" aria-label="Next track" title="Next track">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z" /></svg>
+            </button>
+            <a class="ctrl ctrl-link" id="openYt" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Open current song on YouTube" title="Open current song on YouTube">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zM5 5v14h14v-7h-2v5H7V7h5V5H5z" /></svg>
+            </a>
+            <button type="button" class="ctrl ctrl-link" id="queueBtn" aria-expanded="false" aria-controls="queue" aria-label="Show playlist" title="Show playlist">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" /></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="queue" id="queue" hidden>
+        <div class="queue-head">
+          <div>
+            <span class="queue-kicker">The mandap queue</span>
+            <h3>Festival playlist</h3>
+          </div>
+          <span id="queueCount">0 songs</span>
+        </div>
+        <ol class="queue-list" id="queueList"></ol>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="footer-note">Last Visitor: <strong>Mumbai, India</strong></p>
+    <p class="footer-mantra">गणपती बाप्पा मोरया <span aria-hidden="true">·</span> Made by <a class="maker-link" href="https://github.com/mangeshraut712" target="_blank" rel="noopener noreferrer">Mangesh Raut <span aria-hidden="true">↗</span></a></p>
+  </footer>
+
+  <div id="yt-host" class="yt-host" aria-hidden="true">
+    <div id="yt-player"></div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="songs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

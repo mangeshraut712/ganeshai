@@ -1,0 +1,118 @@
+/**
+ * Ganesh Chaturthi bangers, dhol-tasha cuts, and aarti staples.
+ * Playback is always via YouTube (video IDs only — no audio files hosted here).
+ */
+window.GANESH_SONGS = [
+  {
+    id: "HzGE_WaSqE4",
+    youtubeId: "HzGE_WaSqE4",
+    title: "Ya Re Ya",
+    artist: "Rohan-Rohan",
+    album: "Ventilator",
+  },
+  {
+    id: "XgcMujMnoQU",
+    youtubeId: "XgcMujMnoQU",
+    title: "Ganpati Majha Nachat Aala",
+    artist: "Anand Shinde",
+    album: "Ganpati Majha Nachat Aala",
+  },
+  {
+    id: "HV5KrQNak-w",
+    youtubeId: "HV5KrQNak-w",
+    title: "Ganraj Rangi Nachato",
+    artist: "Lata Mangeshkar",
+    album: "Ganapati Aarti",
+  },
+  {
+    id: "CqEoGLs6JfU",
+    youtubeId: "CqEoGLs6JfU",
+    title: "Gajananaa Gajananaa",
+    artist: "Shankar Mahadevan",
+    album: "Lokmanya · Ek Yugpurush",
+  },
+  {
+    id: "XmS9GTQuAhs",
+    youtubeId: "XmS9GTQuAhs",
+    title: "Deva Shree Ganesha",
+    artist: "Ajay-Atul · Ajay Gogavale",
+    album: "Agneepath",
+  },
+  {
+    id: "GrVOG4POsko",
+    youtubeId: "GrVOG4POsko",
+    title: "Mourya Re",
+    artist: "Shankar Mahadevan",
+    album: "Don",
+  },
+  {
+    id: "DPH4r-nRNE0",
+    youtubeId: "DPH4r-nRNE0",
+    title: "Morya Morya",
+    artist: "Ajay-Atul",
+    album: "Uladhaal",
+  },
+  {
+    id: "Yjd9KmmWQ8k",
+    youtubeId: "Yjd9KmmWQ8k",
+    title: "Bappa Morya Re",
+    artist: "Prahlad Shinde · DJ NeSH",
+    album: "Bappa Morya Re",
+  },
+  {
+    id: "SU8bzZad1Ec",
+    youtubeId: "SU8bzZad1Ec",
+    title: "Devaraya",
+    artist: "Shankar Mahadevan",
+    album: "Dhol Taashe",
+  },
+  {
+    id: "NVhuAgGIeRI",
+    youtubeId: "NVhuAgGIeRI",
+    title: "Naad Ninaadala Re Morya",
+    artist: "Anand Shinde · DJ Kamlesh Solapur",
+    album: "Dhol Tasha Mix",
+  },
+  {
+    id: "8hyHYNyhahQ",
+    youtubeId: "8hyHYNyhahQ",
+    title: "Ganpati Bappa Morya",
+    artist: "Tejas Padave · Sneha Mahadik",
+    album: "Ganpati Bappa Morya · 2025",
+  },
+  {
+    id: "DYG0AbBOYLI",
+    youtubeId: "DYG0AbBOYLI",
+    title: "Maza Bappa Shree",
+    artist: "Shaan",
+    album: "Ganpati Song",
+  },
+  {
+    id: "q72FRIUFcvM",
+    youtubeId: "q72FRIUFcvM",
+    title: "Sukhkarta Dukhharta",
+    artist: "Anuradha Paudwal",
+    album: "Aarti & Bhajan",
+  },
+  {
+    id: "vVgz3Pg-EMs",
+    youtubeId: "vVgz3Pg-EMs",
+    title: "Shendur Laal Chadhayo",
+    artist: "Ravindra Sathe",
+    album: "Vaastav · Ganesh Aarti",
+  },
+  {
+    id: "re88S-5fpmA",
+    youtubeId: "re88S-5fpmA",
+    title: "Ekadantaya Vakratundaya",
+    artist: "Shankar Mahadevan",
+    album: "Ganeshotsav Special",
+  },
+  {
+    id: "ZlzfmptxQ4w",
+    youtubeId: "ZlzfmptxQ4w",
+    title: "Gan Gan Ganat Bote",
+    artist: "Traditional · Gajanan Maharaj",
+    album: "Marathi Devotional",
+  },
+];
