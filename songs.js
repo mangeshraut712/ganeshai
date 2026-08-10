@@ -69,8 +69,8 @@ window.GANESH_SONGS = [
     album: "Dhol Taashe",
   },
   {
-    id: "NVhuAgGIeRI",
-    youtubeId: "NVhuAgGIeRI",
+    id: "KuXFZygR33Y",
+    youtubeId: "KuXFZygR33Y",
     title: "Naad Ninaadala Re Morya",
     artist: "Anand Shinde · DJ Kamlesh Solapur",
     album: "Dhol Tasha Mix",

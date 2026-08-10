@@ -29,11 +29,29 @@
     prev: $("prev"),
     next: $("next"),
     shuffle: $("shuffle"),
+    repeat: $("repeat"),
+    repeatBadge: $("repeatBadge"),
+    volumeControl: $("volumeControl"),
+    muteBtn: $("muteBtn"),
+    volSlider: $("volSlider"),
     openYt: $("openYt"),
     queueBtn: $("queueBtn"),
     queue: $("queue"),
     queueList: $("queueList"),
     queueCount: $("queueCount"),
+    queueSearch: $("queueSearch"),
+    searchClear: $("searchClear"),
+    filterAll: $("filterAll"),
+    filterFavs: $("filterFavs"),
+    favCount: $("favCount"),
+    queueEmpty: $("queueEmpty"),
+    favBtn: $("favBtn"),
+    equalizer: $("equalizer"),
+    bellBtn: $("bellBtn"),
+    shankhBtn: $("shankhBtn"),
+    helpBtn: $("helpBtn"),
+    helpModal: $("helpModal"),
+    helpClose: $("helpClose"),
     onlineCount: $("onlineCount"),
     toast: $("toast"),
     petals: $("petals"),
@@ -45,14 +63,20 @@
   let ready = false;
   let playing = false;
   let shuffleOn = false;
+  let repeatMode = localStorage.getItem("ganesh_repeat") || "off"; // "off" | "all" | "one"
+  let volume = parseInt(localStorage.getItem("ganesh_volume") || "100", 10);
+  let isMuted = localStorage.getItem("ganesh_muted") === "true";
+  let favorites = new Set(JSON.parse(localStorage.getItem("ganesh_favs") || "[]"));
+  let searchQuery = "";
+  let activeTab = "all"; // "all" | "favs"
   let order = SONGS.map((_, i) => i);
   let progressTimer = null;
   let dragging = false;
   let toastTimer = null;
   let skipTimer = null;
   let userStarted = false;
+  let audioCtx = null;
 
-  // Skip quiet intros on some aartis a bit — still starts near beginning
   const START_SECONDS = 0;
 
   // ── Helpers ──────────────────────────────────
@@ -114,6 +138,204 @@
     }
   }
 
+  // ── Web Audio Synth for Mandap Ambient SFX ────
+  function getAudioCtx() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function ringBell() {
+    try {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+      const freqs = [1200, 2400, 3600, 4800, 6200];
+      const gains = [0.4, 0.3, 0.2, 0.1, 0.05];
+
+      freqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(gains[idx], now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 2.6);
+      });
+      showToast("🔔 Mandap Bell Ringing!");
+    } catch (e) {
+      console.error("Audio error", e);
+    }
+  }
+
+  function soundShankh() {
+    try {
+      const ctx = getAudioCtx();
+      const now = ctx.currentTime;
+
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = "sawtooth";
+      osc2.type = "sine";
+
+      osc1.frequency.setValueAtTime(180, now);
+      osc1.frequency.exponentialRampToValueAtTime(260, now + 0.8);
+      osc1.frequency.exponentialRampToValueAtTime(220, now + 2.8);
+
+      osc2.frequency.setValueAtTime(180, now);
+      osc2.frequency.exponentialRampToValueAtTime(261, now + 0.8);
+      osc2.frequency.exponentialRampToValueAtTime(221, now + 2.8);
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(400, now);
+      filter.frequency.linearRampToValueAtTime(800, now + 0.8);
+      filter.frequency.linearRampToValueAtTime(350, now + 2.8);
+
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.35, now + 0.6);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.0);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 3.1);
+      osc2.stop(now + 3.1);
+
+      showToast("🐚 Shankh Naad · ॐ ॐ ॐ");
+    } catch (e) {
+      console.error("Audio error", e);
+    }
+  }
+
+  // ── Media Session API ────────────────────────
+  function updateMediaSession(song) {
+    if (!("mediaSession" in navigator) || !song) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title,
+      artist: song.artist,
+      album: song.album || "Ganeshotsav Radio",
+      artwork: [
+        { src: thumb(song.youtubeId, "hqdefault"), sizes: "480x360", type: "image/jpeg" },
+        { src: thumb(song.youtubeId, "maxresdefault"), sizes: "1280x720", type: "image/jpeg" },
+      ]
+    });
+  }
+
+  function setupMediaSessionActions() {
+    if (!("mediaSession" in navigator)) return;
+    const actions = [
+      ["play", () => togglePlay()],
+      ["pause", () => togglePlay()],
+      ["previoustrack", () => playPrev()],
+      ["nexttrack", () => playNext()],
+      ["seekto", (details) => {
+        if (player && typeof player.seekTo === "function" && details.seekTime !== undefined) {
+          player.seekTo(details.seekTime, true);
+        }
+      }],
+    ];
+
+    actions.forEach(([action, handler]) => {
+      try {
+        navigator.mediaSession.setActionHandler(action, handler);
+      } catch (err) {
+        /* ignore unsupported actions */
+      }
+    });
+  }
+
+  // ── Volume & Favorites Logic ─────────────────
+  function applyVolume() {
+    if (el.volSlider) el.volSlider.value = String(volume);
+    if (el.volumeControl) el.volumeControl.classList.toggle("is-muted", isMuted);
+    if (ready && player) {
+      if (isMuted) {
+        player.mute();
+      } else {
+        player.unMute();
+        player.setVolume(volume);
+      }
+    }
+  }
+
+  function setVolume(val) {
+    volume = clamp(val, 0, 100);
+    if (volume > 0 && isMuted) {
+      isMuted = false;
+    }
+    localStorage.setItem("ganesh_volume", String(volume));
+    localStorage.setItem("ganesh_muted", String(isMuted));
+    applyVolume();
+  }
+
+  function toggleMute() {
+    isMuted = !isMuted;
+    localStorage.setItem("ganesh_muted", String(isMuted));
+    applyVolume();
+    showToast(isMuted ? "Audio muted" : `Volume ${volume}%`);
+  }
+
+  function updateRepeatUI() {
+    if (!el.repeat) return;
+    const isAll = repeatMode === "all";
+    const isOne = repeatMode === "one";
+
+    el.repeat.classList.toggle("is-active", isAll || isOne);
+    if (el.repeatBadge) el.repeatBadge.hidden = !isOne;
+    el.repeat.setAttribute("aria-label", `Repeat mode: ${repeatMode}`);
+  }
+
+  function cycleRepeat() {
+    if (repeatMode === "off") repeatMode = "all";
+    else if (repeatMode === "all") repeatMode = "one";
+    else repeatMode = "off";
+
+    localStorage.setItem("ganesh_repeat", repeatMode);
+    updateRepeatUI();
+    const msgs = { off: "Repeat off", all: "Repeat playlist on", one: "Repeat single track on" };
+    showToast(msgs[repeatMode]);
+  }
+
+  function updateFavUI() {
+    const song = currentSong();
+    if (!song || !el.favBtn) return;
+    const isFav = favorites.has(song.id);
+    el.favBtn.classList.toggle("is-favorite", isFav);
+    el.favBtn.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
+    if (el.favCount) el.favCount.textContent = String(favorites.size);
+  }
+
+  function toggleFavorite(songId) {
+    const id = songId || currentSong()?.id;
+    if (!id) return;
+    if (favorites.has(id)) {
+      favorites.delete(id);
+      showToast("Removed from favorites");
+    } else {
+      favorites.add(id);
+      showToast("Added to ❤️ Favorites");
+    }
+    localStorage.setItem("ganesh_favs", JSON.stringify(Array.from(favorites)));
+    updateFavUI();
+    buildQueue();
+  }
+
   // ── UI updates ───────────────────────────────
   function updateMeta(song) {
     if (!song) return;
@@ -123,6 +345,8 @@
     el.cover.alt = `${song.title} cover art`;
     el.openYt.href = ytWatch(song.youtubeId);
     document.title = `${song.title} · GaneshAI Radio`;
+    updateFavUI();
+    updateMediaSession(song);
     highlightQueue();
   }
 
@@ -183,11 +407,32 @@
 
   // ── Queue ────────────────────────────────────
   function buildQueue() {
+    if (!el.queueList) return;
     el.queueList.innerHTML = "";
-    el.queueCount.textContent = `${SONGS.length} songs`;
+    const q = searchQuery.trim().toLowerCase();
 
-    order.forEach((songIndex, playIndex) => {
+    const filteredIndices = order.filter((songIndex) => {
       const song = SONGS[songIndex];
+      if (activeTab === "favs" && !favorites.has(song.id)) {
+        return false;
+      }
+      if (!q) return true;
+      return (
+        song.title.toLowerCase().includes(q) ||
+        song.artist.toLowerCase().includes(q) ||
+        (song.album && song.album.toLowerCase().includes(q))
+      );
+    });
+
+    el.queueCount.textContent = `${filteredIndices.length} song${filteredIndices.length === 1 ? "" : "s"}`;
+    if (el.favCount) el.favCount.textContent = String(favorites.size);
+    if (el.queueEmpty) el.queueEmpty.hidden = filteredIndices.length > 0;
+
+    filteredIndices.forEach((songIndex) => {
+      const song = SONGS[songIndex];
+      const playIndex = order.indexOf(songIndex);
+      const isFav = favorites.has(song.id);
+
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "queue-item";
@@ -198,6 +443,7 @@
           <span class="q-title"></span>
           <span class="q-artist"></span>
         </span>
+        <span class="q-fav-tag">${isFav ? "❤️" : ""}</span>
         <span class="q-now">Now</span>
       `;
       btn.querySelector(".q-title").textContent = song.title;
@@ -213,6 +459,7 @@
   }
 
   function highlightQueue() {
+    if (!el.queueList) return;
     const items = el.queueList.querySelectorAll(".queue-item");
     items.forEach((node) => {
       const i = Number(node.dataset.playIndex);
@@ -262,11 +509,7 @@
         events: {
           onReady: (e) => {
             ready = true;
-            try {
-              e.target.setVolume(100);
-            } catch {
-              /* ignore */
-            }
+            applyVolume();
             updateMeta(song);
             setProgress(0, 0);
             resolve(player);
@@ -294,7 +537,14 @@
       case S.ENDED:
         setPlayingUI(false);
         stopProgressLoop();
-        playNext(true);
+        if (repeatMode === "one") {
+          player.seekTo(0, true);
+          player.playVideo();
+        } else if (repeatMode === "off" && index === order.length - 1) {
+          showToast("End of playlist");
+        } else {
+          playNext(true);
+        }
         break;
       case S.BUFFERING:
         setBufferingUI(true);
@@ -308,7 +558,6 @@
   }
 
   function onPlayerError(event) {
-    // 2=invalid id, 5=html5, 100=not found, 101/150=embed not allowed
     console.warn("YouTube error", event.data, currentSong()?.title, currentSong()?.youtubeId);
     setPlayingUI(false);
     if (skipTimer) return;
@@ -355,7 +604,6 @@
       player.pauseVideo();
     } else {
       player.playVideo();
-      // Browsers may block autoplay until a gesture — we already have one
     }
   }
 
@@ -366,7 +614,6 @@
   }
 
   function playPrev() {
-    // Restart if >3s in, else previous
     try {
       const t = player?.getCurrentTime?.() || 0;
       if (t > 3) {
@@ -442,7 +689,6 @@
   }
 
   function fakePresence() {
-    // Decorative only — same vibe as saloon/garba online counters
     const base = 12 + Math.floor(Math.random() * 40);
     const tick = () => {
       const n = clamp(base + Math.floor(Math.random() * 9) - 4, 3, 99);
@@ -465,6 +711,36 @@
         break;
       case "ArrowLeft":
         playPrev();
+        break;
+      case "m":
+      case "M":
+        toggleMute();
+        break;
+      case "r":
+      case "R":
+        cycleRepeat();
+        break;
+      case "s":
+      case "S":
+        el.shuffle.click();
+        break;
+      case "f":
+      case "F":
+        toggleFavorite();
+        break;
+      case "b":
+      case "B":
+        ringBell();
+        break;
+      case "k":
+      case "K":
+        soundShankh();
+        break;
+      case "?":
+        if (el.helpModal) {
+          if (el.helpModal.open) el.helpModal.close();
+          else el.helpModal.showModal();
+        }
         break;
       default:
         break;
@@ -491,6 +767,78 @@
       showToast(shuffleOn ? "Shuffle on · मोरया!" : "Shuffle off");
     });
 
+    if (el.repeat) {
+      el.repeat.addEventListener("click", cycleRepeat);
+    }
+
+    if (el.muteBtn) {
+      el.muteBtn.addEventListener("click", toggleMute);
+    }
+
+    if (el.volSlider) {
+      el.volSlider.addEventListener("input", (e) => {
+        setVolume(Number(e.target.value));
+      });
+    }
+
+    if (el.favBtn) {
+      el.favBtn.addEventListener("click", () => toggleFavorite());
+    }
+
+    if (el.bellBtn) {
+      el.bellBtn.addEventListener("click", ringBell);
+    }
+
+    if (el.shankhBtn) {
+      el.shankhBtn.addEventListener("click", soundShankh);
+    }
+
+    if (el.helpBtn && el.helpModal) {
+      el.helpBtn.addEventListener("click", () => el.helpModal.showModal());
+    }
+    if (el.helpClose && el.helpModal) {
+      el.helpClose.addEventListener("click", () => el.helpModal.close());
+    }
+
+    if (el.queueSearch) {
+      el.queueSearch.addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        if (el.searchClear) el.searchClear.hidden = !searchQuery;
+        buildQueue();
+      });
+    }
+
+    if (el.searchClear) {
+      el.searchClear.addEventListener("click", () => {
+        searchQuery = "";
+        if (el.queueSearch) el.queueSearch.value = "";
+        el.searchClear.hidden = true;
+        buildQueue();
+      });
+    }
+
+    if (el.filterAll) {
+      el.filterAll.addEventListener("click", () => {
+        activeTab = "all";
+        el.filterAll.classList.add("is-active");
+        el.filterFavs.classList.remove("is-active");
+        el.filterAll.setAttribute("aria-selected", "true");
+        el.filterFavs.setAttribute("aria-selected", "false");
+        buildQueue();
+      });
+    }
+
+    if (el.filterFavs) {
+      el.filterFavs.addEventListener("click", () => {
+        activeTab = "favs";
+        el.filterFavs.classList.add("is-active");
+        el.filterAll.classList.remove("is-active");
+        el.filterFavs.setAttribute("aria-selected", "true");
+        el.filterAll.setAttribute("aria-selected", "false");
+        buildQueue();
+      });
+    }
+
     el.queueBtn.addEventListener("click", () => {
       const open = el.queue.hidden;
       el.queue.hidden = !open;
@@ -503,7 +851,6 @@
     window.addEventListener("pointercancel", onScrubEnd);
     window.addEventListener("keydown", onKey);
 
-    // Click cover to play/pause
     el.cover.addEventListener("click", togglePlay);
     el.cover.addEventListener("error", () => {
       el.cover.classList.add("is-missing");
@@ -512,6 +859,10 @@
       el.cover.classList.remove("is-missing");
     });
     el.cover.style.cursor = "pointer";
+
+    setupMediaSessionActions();
+    updateRepeatUI();
+    applyVolume();
   }
 
   // ── Boot ─────────────────────────────────────
@@ -521,7 +872,6 @@
     spawnPetals();
     fakePresence();
     reshuffle(false);
-    // Open on the requested festival opener; users can still shuffle from the controls.
     index = 0;
     buildQueue();
     updateMeta(currentSong());

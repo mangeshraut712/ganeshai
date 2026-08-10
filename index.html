@@ -83,54 +83,110 @@
     <section class="player-zone" aria-label="Ganeshotsav music player">
       <div class="player" id="player-card">
         <div class="player-topline" aria-hidden="true"></div>
+
+        <!-- Top Mandap Ambient Bar -->
+        <div class="mandap-fx-bar" aria-label="Mandap ambient sounds">
+          <div class="mandap-badge">
+            <span class="mandap-badge-dot" aria-hidden="true"></span>
+            <span class="mandap-badge-text">Mandap Radio</span>
+          </div>
+
+          <div class="fx-cluster">
+            <button type="button" class="fx-btn" id="bellBtn" title="Ring Mandap Bell (घंटी) [B]" aria-label="Ring Mandap Bell">
+              <span class="fx-icon">🔔</span>
+              <span class="fx-label">घंटी</span>
+            </button>
+            <button type="button" class="fx-btn" id="shankhBtn" title="Sound Shankh Naad (शंख) [K]" aria-label="Sound Shankh">
+              <span class="fx-icon">🐚</span>
+              <span class="fx-label">शंख नाद</span>
+            </button>
+            <button type="button" class="fx-btn fx-help" id="helpBtn" title="Keyboard Shortcuts [?]" aria-label="Keyboard Shortcuts">
+              <span class="fx-icon">⌨️</span>
+              <span class="fx-label">Shortcuts</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Track Info Row -->
         <div class="player-main">
           <div class="cover-shell">
             <div class="cover-halo" aria-hidden="true"></div>
-            <img id="cover" class="cover" src="https://images.unsplash.com/photo-1598188752015-ea786296f571?auto=format&amp;fit=crop&amp;w=240&amp;q=80" alt="Ganeshotsav cover art" width="56" height="56" draggable="false" />
+            <img id="cover" class="cover" src="https://images.unsplash.com/photo-1598188752015-ea786296f571?auto=format&amp;fit=crop&amp;w=240&amp;q=80" alt="Ganeshotsav cover art" width="52" height="52" draggable="false" />
           </div>
 
           <div class="track-info">
-            <h2 id="title" class="title">Tuning in to Bappa Radio…</h2>
-            <p id="artist" class="artist">Your aarti playlist is loading</p>
-
-            <div class="progress-block">
-              <button type="button" class="scrub" id="scrub" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="slider">
-                <span class="track" aria-hidden="true">
-                  <span class="fill" id="fill"></span>
-                  <span class="knob" id="knob"></span>
-                </span>
-              </button>
-              <div class="times">
-                <span id="currentTime">0:00</span>
-                <span id="duration">0:00</span>
+            <div class="title-row">
+              <h2 id="title" class="title">Tuning in to Bappa Radio…</h2>
+              <div class="equalizer" id="equalizer" aria-hidden="true" title="Playing">
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
+                <span class="eq-bar"></span>
               </div>
             </div>
+            <p id="artist" class="artist">Your aarti playlist is loading</p>
           </div>
 
-          <div class="controls" aria-label="Playback controls">
-            <div class="control-cluster control-cluster-start">
-              <button type="button" class="ctrl ctrl-quiet" id="shuffle" aria-pressed="false" aria-label="Turn shuffle on" title="Shuffle">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M15 15l6 6m0-5v5h-5M4 4l5 5" /></svg>
-              </button>
-              <button type="button" class="ctrl" id="prev" aria-label="Previous track" title="Previous track">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" /></svg>
-              </button>
-            </div>
-            <button type="button" class="ctrl ctrl-play" id="play" aria-busy="false" aria-label="Play" title="Play">
+          <button type="button" class="fav-btn" id="favBtn" aria-label="Save song to favorites [F]" title="Favorite (F)">
+            <svg class="icon-heart" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Progress Scrub Bar -->
+        <div class="progress-block">
+          <button type="button" class="scrub" id="scrub" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="slider">
+            <span class="track" aria-hidden="true">
+              <span class="fill" id="fill"></span>
+              <span class="knob" id="knob"></span>
+            </span>
+          </button>
+          <div class="times">
+            <span id="currentTime">0:00</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+
+        <!-- Symmetric 3-Cluster Playback Controls Bar -->
+        <div class="controls" aria-label="Playback controls">
+          <div class="control-cluster control-cluster-left">
+            <button type="button" class="ctrl ctrl-quiet" id="shuffle" aria-pressed="false" aria-label="Turn shuffle on [S]" title="Shuffle (S)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M15 15l6 6m0-5v5h-5M4 4l5 5" /></svg>
+            </button>
+            <button type="button" class="ctrl ctrl-quiet" id="repeat" aria-label="Repeat mode [R]" title="Repeat mode (R)">
+              <svg class="icon-repeat" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+              <span class="repeat-badge" id="repeatBadge" hidden>1</span>
+            </button>
+          </div>
+
+          <div class="control-cluster control-cluster-center">
+            <button type="button" class="ctrl" id="prev" aria-label="Previous track [←]" title="Previous track (Left Arrow)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6V6zm3.5 6 8.5 6V6l-8.5 6z" /></svg>
+            </button>
+            <button type="button" class="ctrl ctrl-play" id="play" aria-busy="false" aria-label="Play [Space]" title="Play (Space)">
               <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7L8 5z" /></svg>
               <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6V5zm8 0h4v14h-4V5z" /></svg>
             </button>
-            <div class="control-cluster control-cluster-end">
-              <button type="button" class="ctrl" id="next" aria-label="Next track" title="Next track">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z" /></svg>
+            <button type="button" class="ctrl" id="next" aria-label="Next track [→]" title="Next track (Right Arrow)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6h2v12h-2V6zM6 18l8.5-6L6 6v12z" /></svg>
+            </button>
+          </div>
+
+          <div class="control-cluster control-cluster-right">
+            <div class="volume-control" id="volumeControl">
+              <button type="button" class="ctrl ctrl-quiet" id="muteBtn" aria-label="Mute sound [M]" title="Mute/Unmute (M)">
+                <svg class="icon-vol-high" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <svg class="icon-vol-mute" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
               </button>
-              <a class="ctrl ctrl-link" id="openYt" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Open current song on YouTube" title="Open current song on YouTube">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zM5 5v14h14v-7h-2v5H7V7h5V5H5z" /></svg>
-              </a>
-              <button type="button" class="ctrl ctrl-link" id="queueBtn" aria-expanded="false" aria-controls="queue" aria-label="Show playlist" title="Show playlist">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" /></svg>
-              </button>
+              <input type="range" class="volume-slider" id="volSlider" min="0" max="100" value="100" aria-label="Volume slider" />
             </div>
+            <a class="ctrl ctrl-link" id="openYt" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Open current song on YouTube" title="Open current song on YouTube">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zM5 5v14h14v-7h-2v5H7V7h5V5H5z" /></svg>
+            </a>
+            <button type="button" class="ctrl ctrl-link" id="queueBtn" aria-expanded="false" aria-controls="queue" aria-label="Show playlist" title="Show playlist">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2H3V5zm0 6h12v2H3v-2zm0 6h18v2H3v-2z" /></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -143,7 +199,22 @@
           </div>
           <span id="queueCount">0 songs</span>
         </div>
+
+        <div class="queue-controls">
+          <div class="queue-search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="search" class="queue-search" id="queueSearch" placeholder="Search song, artist, album…" aria-label="Search playlist" />
+            <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" hidden>×</button>
+          </div>
+
+          <div class="queue-filter-tabs" role="tablist" aria-label="Filter playlist">
+            <button type="button" class="filter-tab is-active" id="filterAll" role="tab" aria-selected="true">All Songs</button>
+            <button type="button" class="filter-tab" id="filterFavs" role="tab" aria-selected="false">❤️ Favorites <span class="fav-badge" id="favCount">0</span></button>
+          </div>
+        </div>
+
         <ol class="queue-list" id="queueList"></ol>
+        <div class="queue-empty" id="queueEmpty" hidden>No matching songs found in the mandap queue.</div>
       </aside>
     </section>
   </main>
@@ -158,6 +229,26 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <dialog id="helpModal" class="help-modal">
+    <div class="help-content">
+      <header class="help-header">
+        <h3>Keyboard Shortcuts</h3>
+        <button type="button" class="help-close" id="helpClose" aria-label="Close shortcuts dialog">×</button>
+      </header>
+      <ul class="help-list">
+        <li><kbd>Space</kbd> <span>Play / Pause</span></li>
+        <li><kbd>→</kbd> / <kbd>←</kbd> <span>Next / Previous track</span></li>
+        <li><kbd>M</kbd> <span>Mute / Unmute audio</span></li>
+        <li><kbd>R</kbd> <span>Cycle Repeat mode (Off / All / One)</span></li>
+        <li><kbd>S</kbd> <span>Toggle Shuffle mode</span></li>
+        <li><kbd>F</kbd> <span>Favorite / Unfavorite track</span></li>
+        <li><kbd>B</kbd> <span>Ring Mandap Bell 🔔</span></li>
+        <li><kbd>K</kbd> <span>Sound Shankh Naad 🐚</span></li>
+        <li><kbd>?</kbd> <span>Toggle Shortcuts Help</span></li>
+      </ul>
+    </div>
+  </dialog>
 
   <script src="songs.js"></script>
   <script src="app.js"></script>
