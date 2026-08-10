@@ -1714,7 +1714,7 @@ body {
 
 .hero-title {
   width: min(100%, 760px);
-  transform: translateY(-4vh);
+  transform: translateY(1vh);
 }
 
 .hero-title-marathi {
@@ -1819,7 +1819,7 @@ body {
 
   .hero-title {
     width: min(100%, 340px);
-    transform: translateY(-2vh);
+    transform: translateY(1.5vh);
   }
 
   .hero-title-marathi {
