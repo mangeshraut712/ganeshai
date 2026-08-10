@@ -52,6 +52,7 @@ The name keeps the heart of the festival in the first word and gives the project
 - Responsive layouts tested at desktop and narrow mobile widths, including 320 px.
 - Spotify and YouTube Music entry points for continuing the listening session on the original platforms.
 - GitHub-linked creator credit for [Mangesh Raut](https://github.com/mangeshraut712).
+- Production Web Analytics through Vercel’s privacy-friendly first-party loader.
 
 ## Listen
 
@@ -86,7 +87,8 @@ The player control rail was rebuilt around a three-column primary-action grid so
 2. `styles.css` provides the full-viewport composition, liquid-glass surfaces, responsive layout, focus states, and reduced-motion behavior.
 3. `songs.js` contains the curated track metadata and YouTube video IDs.
 4. `app.js` loads the official YouTube IFrame API, maps its state into the custom player, and manages progress, queue selection, shuffle, keyboard controls, and playback errors.
-5. The site is served as static files. There is no application server, database, build pipeline, or local audio storage.
+5. `package.json` pins `@vercel/analytics`, while `index.html` loads Vercel’s documented static Web Analytics script at `/_vercel/insights/script.js`.
+6. The site is served as static files. There is no application server, database, build pipeline, or local audio storage.
 
 ## Run locally
 
@@ -108,6 +110,7 @@ Opening `index.html` directly with a `file://` URL is not recommended because br
 | `styles.css` | Festival visual system, responsive rules, glass player, and accessibility states |
 | `app.js` | YouTube API integration and player interaction logic |
 | `songs.js` | 30-track Ganeshotsav queue and YouTube metadata |
+| `package.json` / `package-lock.json` | Vercel Web Analytics dependency and reproducible install |
 | `ganesh background.png` | Active full-bleed Ganesh festival background |
 | `ganesh logo.png` | Ganesh logo used for the favicon and touch icon |
 | `docs/superpowers/` | Design brief and implementation history for the 2026 build |
@@ -146,6 +149,7 @@ vercel deploy . --prod
 ```
 
 The current production site is [ganeshai.vercel.app](https://ganeshai.vercel.app/).
+Web Analytics is enabled for the Vercel project and is checked after deployment through the first-party script and page-view endpoint.
 
 ## Verification
 
@@ -154,9 +158,12 @@ The 2026 release was checked with:
 ```bash
 node --check app.js
 node --check songs.js
+npm audit --omit=dev --audit-level=high
 ```
 
 The page was also opened through a local HTTP server and checked in a real browser at 1440×900, 390×844, and 320×844. The page had no horizontal overflow, the play button shared the control rail centerline, the opener was `Ya Re Ya`, and all 30 queue transitions matched their expected YouTube IDs before wrapping back to the opener.
+
+The production smoke check also confirmed `/_vercel/insights/script.js` and `/_vercel/insights/view` both respond successfully.
 
 ## Design notes and credits
 

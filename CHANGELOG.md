@@ -8,6 +8,7 @@ All notable project milestones are recorded here. Dates use the India Standard T
 
 - 5 additional non-duplicate Ganpati/Ganesha singles, expanding the listening run from 25 to 30 songs.
 - `Maza Bappa Aala`, `Bappa`, `Gajanana`, `Ganapati Tu Sarvashreshth`, and `Ganpati Tu Gunapati Tu` from official or artist-published YouTube sources.
+- Vercel Web Analytics through the documented static loader and the locked `@vercel/analytics@2.0.1` dependency.
 
 ### Improved
 
@@ -22,6 +23,7 @@ All notable project milestones are recorded here. Dates use the India Standard T
 - Browser transition audit matched every expected title and video ID across 30 next-track actions, then wrapped to `Ya Re Ya`.
 - Slower per-track browser audit kept all 30 selected tracks in the playing state with zero source mismatches.
 - Desktop and mobile layouts remained free of horizontal overflow.
+- Production analytics smoke check returned `200` for both the loader and the page-view endpoint.
 
 ## [2026.08.10] — 25-song queue expansion
 
