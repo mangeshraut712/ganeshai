@@ -111,8 +111,11 @@ Opening `index.html` directly with a `file://` URL is not recommended because br
 | `app.js` | YouTube API integration and player interaction logic |
 | `songs.js` | 30-track Ganeshotsav queue and YouTube metadata |
 | `package.json` / `package-lock.json` | Vercel Web Analytics dependency and reproducible install |
-| `ganesh background.png` | Active full-bleed Ganesh festival background |
-| `ganesh logo.png` | Ganesh logo used for the favicon and touch icon |
+| `ganesh-background.webp` | Optimized full-bleed Ganesh festival background used by the live page |
+| `ganesh-background-mobile.webp` | Portrait crop optimized for narrow screens without changing the composition |
+| `ganesh-logo.webp` | Lightweight initial player artwork before the first YouTube thumbnail loads |
+| `favicon.png`, `icon-192.png`, `icon-512.png` | Properly sized browser, touch, and install icons |
+| `ganesh background.png`, `ganesh logo.png` | Original high-resolution source artwork retained for future exports |
 | `docs/superpowers/` | Design brief and implementation history for the 2026 build |
 | `CHANGELOG.md` | Release-level project history |
 | `docs/home-preview.png` | Desktop README preview captured from the verified home screen |

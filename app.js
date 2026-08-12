@@ -80,6 +80,7 @@
   // ── State ────────────────────────────────────
   let index = 0;
   let player = null;
+  let playerPromise = null;
   let ready = false;
   let playing = false;
   let shuffleOn = false;
@@ -108,7 +109,7 @@
     const r = s % 60;
     return `${m}:${String(r).padStart(2, "0")}`;
   };
-  const thumb = (id, quality = "hqdefault") =>
+  const thumb = (id, quality = "default") =>
     `https://i.ytimg.com/vi/${id}/${quality}.jpg`;
   const ytWatch = (id) => `https://www.youtube.com/watch?v=${id}`;
 
@@ -273,11 +274,11 @@
   }
 
   // ── UI updates ───────────────────────────────
-  function updateMeta(song) {
+  function updateMeta(song, { updateArtwork = true } = {}) {
     if (!song) return;
     el.title.textContent = song.title;
     el.artist.textContent = song.artist + (song.album ? ` · ${song.album}` : "");
-    el.cover.src = thumb(song.youtubeId);
+    if (updateArtwork) el.cover.src = thumb(song.youtubeId);
     el.cover.alt = `${song.title} cover art`;
     el.openYt.href = ytWatch(song.youtubeId);
     document.title = `${song.title} · GaneshAI Radio`;
@@ -387,6 +388,7 @@
       btn.querySelector(".q-artist").textContent = song.artist;
       btn.addEventListener("click", () => {
         index = playIndex;
+        userStarted = true;
         loadAndPlay(true);
         showToast(`Playing · ${song.title}`);
       });
@@ -458,6 +460,32 @@
     });
   }
 
+  async function ensurePlayer(autoplay = false) {
+    if (ready && player) {
+      if (autoplay) player.playVideo();
+      return player;
+    }
+
+    if (!playerPromise) {
+      setBufferingUI(true);
+      playerPromise = createPlayer().catch((error) => {
+        playerPromise = null;
+        setBufferingUI(false);
+        throw error;
+      });
+    }
+
+    try {
+      const instance = await playerPromise;
+      if (autoplay) instance.playVideo();
+      return instance;
+    } catch (error) {
+      console.error(error);
+      showToast("Could not reach YouTube. Check your connection.");
+      return null;
+    }
+  }
+
   function onStateChange(event) {
     const S = window.YT.PlayerState;
     switch (event.data) {
@@ -507,7 +535,7 @@
 
   function loadAndPlay(autoplay) {
     const song = currentSong();
-    if (!song || !player) return;
+    if (!song) return;
     if (skipTimer) {
       clearTimeout(skipTimer);
       skipTimer = null;
@@ -515,6 +543,11 @@
     setBufferingUI(false);
     updateMeta(song);
     setProgress(0, 0);
+
+    if (!player) {
+      if (autoplay && userStarted) ensurePlayer(true);
+      return;
+    }
 
     const payload = { videoId: song.youtubeId, startSeconds: START_SECONDS };
     try {
@@ -531,7 +564,10 @@
 
   function togglePlay() {
     if (!ready || !player) {
+      userStarted = true;
+      updateMeta(currentSong());
       showToast("Connecting to YouTube…");
+      ensurePlayer(true);
       return;
     }
     userStarted = true;
@@ -799,21 +835,20 @@
   async function init() {
     updateClock();
     setInterval(updateClock, 60_000);
-    spawnPetals();
-    fakePresence();
     reshuffle(false);
     index = 0;
-    buildQueue();
-    updateMeta(currentSong());
+    updateMeta(currentSong(), { updateArtwork: false });
     bind();
 
-    try {
-      await createPlayer();
-      showToast("YouTube ready · tap play · गणपती बाप्पा मोरया", 3200);
-    } catch (err) {
-      console.error(err);
-      showToast("Could not reach YouTube. Check your connection.");
-    }
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        spawnPetals();
+        fakePresence();
+        buildQueue();
+      }, 2200);
+    }, { once: true });
+
+    /* YouTube is intentionally loaded on first interaction to keep startup fast. */
   }
 
   if (document.readyState === "loading") {

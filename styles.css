@@ -10,10 +10,10 @@
   --faint: rgba(255, 245, 232, 0.38);
   --line: rgba(255, 245, 232, 0.16);
   --glass: rgba(16, 6, 8, 0.48);
-  --display: "Libre Baskerville", Georgia, serif;
-  --sans: "DM Sans", system-ui, sans-serif;
-  --mono: "DM Mono", ui-monospace, monospace;
-  --dev: "Noto Sans Devanagari", "DM Sans", sans-serif;
+  --display: Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --dev: "Noto Sans Devanagari", "Kohinoor Devanagari", Mangal, var(--sans);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -100,7 +100,7 @@ a,
 
 .backdrop-photo {
   inset: -4%;
-  background-image: url("https://images.unsplash.com/photo-1598188752015-ea786296f571?auto=format&fit=crop&w=2400&q=88");
+  background-image: url("ganesh-background.webp");
   background-position: center 41%;
   background-size: cover;
   filter: saturate(1.14) contrast(1.06);
@@ -1258,7 +1258,7 @@ body.is-playing .equalizer .eq-bar:nth-child(4) { animation-duration: 0.8s; anim
 /* ── Screenshot-led festival composition ───── */
 
 :root {
-  --display: "Yatra One", "Noto Sans Devanagari", sans-serif;
+  --display: var(--dev);
 }
 
 body {
@@ -1266,7 +1266,7 @@ body {
 }
 
 .backdrop-photo {
-  background-image: url("ganesh background.png");
+  background-image: url("ganesh-background.webp");
   background-size: cover;
   background-position: center center;
   filter: saturate(1.08) contrast(1.04) brightness(0.78);
@@ -1533,6 +1533,10 @@ body {
   z-index: 1;
   color: #fff8ec;
   pointer-events: auto;
+  text-decoration: underline;
+  text-decoration-color: var(--marigold);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
   transition: color 160ms ease, opacity 160ms ease;
 }
 
@@ -1574,7 +1578,7 @@ body {
 
 @media (max-width: 560px) {
   .backdrop-photo {
-    background-image: url("ganesh background.png");
+    background-image: url("ganesh-background-mobile.webp");
     background-size: cover;
     background-position: center center;
   }
@@ -2342,5 +2346,36 @@ body.queue-open .footer {
 
   .control-cluster-right {
     gap: 4px;
+  }
+}
+
+/* Keep the radio card low-profile without shrinking its touch targets. */
+.player {
+  gap: 8px;
+  padding: 14px 20px 16px;
+}
+
+.player-main {
+  min-height: 76px;
+  padding: 8px;
+}
+
+.progress-block {
+  margin-top: 0;
+}
+
+.controls {
+  margin-top: 2px;
+}
+
+@media (max-width: 560px) {
+  .player {
+    gap: 10px;
+    padding: 16px 16px 18px;
+  }
+
+  .player-main {
+    min-height: 72px;
+    padding: 8px 4px 10px;
   }
 }

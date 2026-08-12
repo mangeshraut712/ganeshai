@@ -2,6 +2,24 @@
 
 All notable project milestones are recorded here. Dates use the India Standard Time release context for the 2026 build.
 
+## [2026.08.12] — Lighthouse and delivery optimization
+
+### Improved
+
+- Converted the full-screen source artwork to responsive desktop and portrait WebP assets, reducing mobile background delivery from roughly 2.4 MB to about 64 KB.
+- Added purpose-sized favicon and touch icons instead of downloading the multi-megabyte source logo during startup.
+- Deferred the YouTube IFrame API and player until the listener presses play, keeping third-party scripts, cookies, and ad resources out of the initial render.
+- Removed render-blocking remote font requests while preserving the Devanagari-first type hierarchy with system fallbacks.
+- Added an explicit background preload and corrected the source-link accessible names and creator-link treatment.
+- Inlined first-viewport styles, deferred the complete stylesheet and decorative queue work, and kept the YouTube thumbnail off the startup path.
+- Reduced excess player-card height while preserving 42–46 px primary controls, centered playback geometry, and comfortable metadata spacing.
+
+### Verified
+
+- Lighthouse mobile reached 99/100/100/100 locally; the only remaining point is synthetic LCP variance, with zero blocking time and zero layout shift.
+- Lighthouse desktop reached 100/100/100/100 locally.
+- Responsive browser checks at 320, 390, 768, 1024, and 1440 px showed no horizontal overflow and a zero-pixel play-button centerline delta.
+
 ## [2026.08.12] — Focused player surface and mobile parity
 
 ### Improved
