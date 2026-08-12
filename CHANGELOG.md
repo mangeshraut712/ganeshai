@@ -2,6 +2,22 @@
 
 All notable project milestones are recorded here. Dates use the India Standard Time release context for the 2026 build.
 
+## [2026.08.12] — Focused player surface and mobile parity
+
+### Improved
+
+- Removed the in-card `Mandap Radio`, ghanti, shankh, and keyboard-shortcut toolbar so the music card stays focused on listening.
+- Rebuilt the playback rail with a real three-column grid; the play button now stays centered against the card on desktop, tablet, and narrow mobile widths.
+- Kept the mobile card spacious with a full track row, readable metadata, generous progress spacing, and controls that do not clip at 320 px.
+- Reused the top Spotify and YT Music links as the mobile source destinations instead of duplicating a crowded external-link control inside the card.
+- Made local development skip the production-only Vercel Analytics request, while preserving the production loader.
+
+### Fixed
+
+- Removed dead CSS and event wiring for the deleted ambient sound and shortcut controls.
+- Added safe parsing for malformed saved volume, repeat, and favorites preferences.
+- Added keyboard seeking to the progress control without letting the global arrow-key track navigation steal focus.
+
 ## [2026.08.10] — 30-track playback and alignment polish
 
 ### Added

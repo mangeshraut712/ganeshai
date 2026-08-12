@@ -13,6 +13,31 @@
     return;
   }
 
+  const storageGet = (key, fallback = null) => {
+    try {
+      return window.localStorage.getItem(key) ?? fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const storageSet = (key, value) => {
+    try {
+      window.localStorage.setItem(key, value);
+    } catch {
+      /* storage can be unavailable in privacy-restricted contexts */
+    }
+  };
+
+  const readFavorites = () => {
+    try {
+      const stored = JSON.parse(storageGet("ganesh_favs", "[]"));
+      return new Set(Array.isArray(stored) ? stored.filter((id) => typeof id === "string") : []);
+    } catch {
+      return new Set();
+    }
+  };
+
   // ── DOM ──────────────────────────────────────
   const $ = (id) => document.getElementById(id);
   const el = {
@@ -47,11 +72,6 @@
     queueEmpty: $("queueEmpty"),
     favBtn: $("favBtn"),
     equalizer: $("equalizer"),
-    bellBtn: $("bellBtn"),
-    shankhBtn: $("shankhBtn"),
-    helpBtn: $("helpBtn"),
-    helpModal: $("helpModal"),
-    helpClose: $("helpClose"),
     onlineCount: $("onlineCount"),
     toast: $("toast"),
     petals: $("petals"),
@@ -63,10 +83,12 @@
   let ready = false;
   let playing = false;
   let shuffleOn = false;
-  let repeatMode = localStorage.getItem("ganesh_repeat") || "off"; // "off" | "all" | "one"
-  let volume = parseInt(localStorage.getItem("ganesh_volume") || "100", 10);
-  let isMuted = localStorage.getItem("ganesh_muted") === "true";
-  let favorites = new Set(JSON.parse(localStorage.getItem("ganesh_favs") || "[]"));
+  const storedRepeat = storageGet("ganesh_repeat", "off");
+  let repeatMode = ["off", "all", "one"].includes(storedRepeat) ? storedRepeat : "off";
+  const storedVolume = Number.parseInt(storageGet("ganesh_volume", "100"), 10);
+  let volume = Number.isFinite(storedVolume) ? Math.min(100, Math.max(0, storedVolume)) : 100;
+  let isMuted = storageGet("ganesh_muted", "false") === "true";
+  let favorites = readFavorites();
   let searchQuery = "";
   let activeTab = "all"; // "all" | "favs"
   let order = SONGS.map((_, i) => i);
@@ -75,7 +97,6 @@
   let toastTimer = null;
   let skipTimer = null;
   let userStarted = false;
-  let audioCtx = null;
 
   const START_SECONDS = 0;
 
@@ -138,91 +159,6 @@
     }
   }
 
-  // ── Web Audio Synth for Mandap Ambient SFX ────
-  function getAudioCtx() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-    return audioCtx;
-  }
-
-  function ringBell() {
-    try {
-      const ctx = getAudioCtx();
-      const now = ctx.currentTime;
-      const freqs = [1200, 2400, 3600, 4800, 6200];
-      const gains = [0.4, 0.3, 0.2, 0.1, 0.05];
-
-      freqs.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, now);
-
-        gain.gain.setValueAtTime(gains[idx], now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 2.6);
-      });
-      showToast("🔔 Mandap Bell Ringing!");
-    } catch (e) {
-      console.error("Audio error", e);
-    }
-  }
-
-  function soundShankh() {
-    try {
-      const ctx = getAudioCtx();
-      const now = ctx.currentTime;
-
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
-
-      osc1.type = "sawtooth";
-      osc2.type = "sine";
-
-      osc1.frequency.setValueAtTime(180, now);
-      osc1.frequency.exponentialRampToValueAtTime(260, now + 0.8);
-      osc1.frequency.exponentialRampToValueAtTime(220, now + 2.8);
-
-      osc2.frequency.setValueAtTime(180, now);
-      osc2.frequency.exponentialRampToValueAtTime(261, now + 0.8);
-      osc2.frequency.exponentialRampToValueAtTime(221, now + 2.8);
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(400, now);
-      filter.frequency.linearRampToValueAtTime(800, now + 0.8);
-      filter.frequency.linearRampToValueAtTime(350, now + 2.8);
-
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.35, now + 0.6);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.0);
-
-      osc1.connect(filter);
-      osc2.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 3.1);
-      osc2.stop(now + 3.1);
-
-      showToast("🐚 Shankh Naad · ॐ ॐ ॐ");
-    } catch (e) {
-      console.error("Audio error", e);
-    }
-  }
-
   // ── Media Session API ────────────────────────
   function updateMediaSession(song) {
     if (!("mediaSession" in navigator) || !song) return;
@@ -240,8 +176,8 @@
   function setupMediaSessionActions() {
     if (!("mediaSession" in navigator)) return;
     const actions = [
-      ["play", () => togglePlay()],
-      ["pause", () => togglePlay()],
+      ["play", () => { if (!playing) togglePlay(); }],
+      ["pause", () => { if (playing) togglePlay(); }],
       ["previoustrack", () => playPrev()],
       ["nexttrack", () => playNext()],
       ["seekto", (details) => {
@@ -279,14 +215,14 @@
     if (volume > 0 && isMuted) {
       isMuted = false;
     }
-    localStorage.setItem("ganesh_volume", String(volume));
-    localStorage.setItem("ganesh_muted", String(isMuted));
+    storageSet("ganesh_volume", String(volume));
+    storageSet("ganesh_muted", String(isMuted));
     applyVolume();
   }
 
   function toggleMute() {
     isMuted = !isMuted;
-    localStorage.setItem("ganesh_muted", String(isMuted));
+    storageSet("ganesh_muted", String(isMuted));
     applyVolume();
     showToast(isMuted ? "Audio muted" : `Volume ${volume}%`);
   }
@@ -306,7 +242,7 @@
     else if (repeatMode === "all") repeatMode = "one";
     else repeatMode = "off";
 
-    localStorage.setItem("ganesh_repeat", repeatMode);
+    storageSet("ganesh_repeat", repeatMode);
     updateRepeatUI();
     const msgs = { off: "Repeat off", all: "Repeat playlist on", one: "Repeat single track on" };
     showToast(msgs[repeatMode]);
@@ -331,7 +267,7 @@
       favorites.add(id);
       showToast("Added to ❤️ Favorites");
     }
-    localStorage.setItem("ganesh_favs", JSON.stringify(Array.from(favorites)));
+    storageSet("ganesh_favs", JSON.stringify(Array.from(favorites)));
     updateFavUI();
     buildQueue();
   }
@@ -380,6 +316,7 @@
     }
     el.currentTime.textContent = fmt(c);
     el.duration.textContent = d ? fmt(d) : "0:00";
+    el.scrub.setAttribute("aria-valuetext", `${fmt(c)} of ${fmt(d)}`);
   }
 
   function tickProgress() {
@@ -609,7 +546,7 @@
 
   function playNext(fromEnded = false) {
     index = (index + 1) % order.length;
-    userStarted = userStarted || fromEnded;
+    userStarted = true;
     loadAndPlay(true);
   }
 
@@ -671,6 +608,23 @@
     seekToFraction(frac);
   }
 
+  function onScrubKey(e) {
+    if (!ready || !player) return;
+    const duration = player.getDuration?.() || 0;
+    if (!duration) return;
+
+    const current = player.getCurrentTime?.() || 0;
+    let next = current;
+    if (e.key === "ArrowLeft") next -= 5;
+    else if (e.key === "ArrowRight") next += 5;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = duration;
+    else return;
+
+    e.preventDefault();
+    seekToFraction(clamp(next / duration, 0, 1));
+  }
+
   // ── Decorative bits ──────────────────────────
   function spawnPetals(count = 18) {
     if (!el.petals) return;
@@ -701,6 +655,7 @@
   // ── Keyboard ─────────────────────────────────
   function onKey(e) {
     if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if (e.target === el.scrub) return;
     switch (e.key) {
       case " ":
         e.preventDefault();
@@ -727,20 +682,6 @@
       case "f":
       case "F":
         toggleFavorite();
-        break;
-      case "b":
-      case "B":
-        ringBell();
-        break;
-      case "k":
-      case "K":
-        soundShankh();
-        break;
-      case "?":
-        if (el.helpModal) {
-          if (el.helpModal.open) el.helpModal.close();
-          else el.helpModal.showModal();
-        }
         break;
       default:
         break;
@@ -783,21 +724,6 @@
 
     if (el.favBtn) {
       el.favBtn.addEventListener("click", () => toggleFavorite());
-    }
-
-    if (el.bellBtn) {
-      el.bellBtn.addEventListener("click", ringBell);
-    }
-
-    if (el.shankhBtn) {
-      el.shankhBtn.addEventListener("click", soundShankh);
-    }
-
-    if (el.helpBtn && el.helpModal) {
-      el.helpBtn.addEventListener("click", () => el.helpModal.showModal());
-    }
-    if (el.helpClose && el.helpModal) {
-      el.helpClose.addEventListener("click", () => el.helpModal.close());
     }
 
     if (el.queueSearch) {
@@ -843,9 +769,13 @@
       const open = el.queue.hidden;
       el.queue.hidden = !open;
       el.queueBtn.setAttribute("aria-expanded", String(open));
+      el.queueBtn.setAttribute("aria-label", open ? "Hide playlist" : "Show playlist");
+      el.queueBtn.title = open ? "Hide playlist" : "Show playlist";
+      document.body.classList.toggle("queue-open", open);
     });
 
     el.scrub.addEventListener("pointerdown", onScrubStart);
+    el.scrub.addEventListener("keydown", onScrubKey);
     window.addEventListener("pointermove", onScrubMove);
     window.addEventListener("pointerup", onScrubEnd);
     window.addEventListener("pointercancel", onScrubEnd);

@@ -26,7 +26,7 @@
   <summary><strong>View the mobile composition</strong></summary>
   <br />
   <p align="center">
-    <img src="docs/home-preview-mobile.png" alt="GaneshAI mobile home screen with compact music player" width="320" />
+    <img src="docs/home-preview-mobile.png" alt="GaneshAI mobile home screen with a spacious liquid-glass music player" width="320" />
   </p>
 </details>
 
@@ -46,7 +46,7 @@ The name keeps the heart of the festival in the first word and gives the project
 
 - Full-viewport Ganeshotsav artwork with dark readability overlays and restrained festive motion.
 - A focused Marathi hero title: `गणेश महोत्सव`.
-- A liquid-glass music card with cover art, progress scrubbing, play/pause, previous/next, shuffle, YouTube, and playlist controls.
+- A liquid-glass music card with cover art, progress scrubbing, play/pause, previous/next, shuffle, mute, and playlist controls.
 - A hidden-by-default “mandap queue” with 30 Ganesh festival tracks.
 - `Ya Re Ya` as the intentional opening track; shuffle is always a user action.
 - Responsive layouts tested at desktop and narrow mobile widths, including 320 px.

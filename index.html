@@ -24,13 +24,18 @@
   <link rel="icon" type="image/png" href="ganesh%20logo.png" />
   <link rel="apple-touch-icon" href="ganesh%20logo.png" />
   <link rel="stylesheet" href="styles.css" />
-  <!-- Vercel Web Analytics: the project is enabled for the first-party loader. -->
+  <!-- Vercel Web Analytics: skip the production-only loader during local development. -->
   <script>
     window.va = window.va || function () {
       (window.vaq = window.vaq || []).push(arguments);
     };
+    if (!/^(localhost|127(?:\.\d+){3}|\[::1\]|::1)$/.test(location.hostname)) {
+      const analytics = document.createElement("script");
+      analytics.defer = true;
+      analytics.src = "/_vercel/insights/script.js";
+      document.head.appendChild(analytics);
+    }
   </script>
-  <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <div class="backdrop" aria-hidden="true">
@@ -84,34 +89,11 @@
       <div class="player" id="player-card">
         <div class="player-topline" aria-hidden="true"></div>
 
-        <!-- Top Mandap Ambient Bar -->
-        <div class="mandap-fx-bar" aria-label="Mandap ambient sounds">
-          <div class="mandap-badge">
-            <span class="mandap-badge-dot" aria-hidden="true"></span>
-            <span class="mandap-badge-text">Mandap Radio</span>
-          </div>
-
-          <div class="fx-cluster">
-            <button type="button" class="fx-btn" id="bellBtn" title="Ring Mandap Bell (घंटी) [B]" aria-label="Ring Mandap Bell">
-              <span class="fx-icon">🔔</span>
-              <span class="fx-label">घंटी</span>
-            </button>
-            <button type="button" class="fx-btn" id="shankhBtn" title="Sound Shankh Naad (शंख) [K]" aria-label="Sound Shankh">
-              <span class="fx-icon">🐚</span>
-              <span class="fx-label">शंख नाद</span>
-            </button>
-            <button type="button" class="fx-btn fx-help" id="helpBtn" title="Keyboard Shortcuts [?]" aria-label="Keyboard Shortcuts">
-              <span class="fx-icon">⌨️</span>
-              <span class="fx-label">Shortcuts</span>
-            </button>
-          </div>
-        </div>
-
         <!-- Main Track Info Row -->
         <div class="player-main">
           <div class="cover-shell">
             <div class="cover-halo" aria-hidden="true"></div>
-            <img id="cover" class="cover" src="https://images.unsplash.com/photo-1598188752015-ea786296f571?auto=format&amp;fit=crop&amp;w=240&amp;q=80" alt="Ganeshotsav cover art" width="52" height="52" draggable="false" />
+            <img id="cover" class="cover" src="ganesh%20logo.png" alt="Ganeshotsav cover art" width="52" height="52" draggable="false" />
           </div>
 
           <div class="track-info">
@@ -136,7 +118,7 @@
 
         <!-- Progress Scrub Bar -->
         <div class="progress-block">
-          <button type="button" class="scrub" id="scrub" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" role="slider">
+          <button type="button" class="scrub" id="scrub" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0:00 of 0:00" role="slider">
             <span class="track" aria-hidden="true">
               <span class="fill" id="fill"></span>
               <span class="knob" id="knob"></span>
@@ -229,26 +211,6 @@
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
-  <dialog id="helpModal" class="help-modal">
-    <div class="help-content">
-      <header class="help-header">
-        <h3>Keyboard Shortcuts</h3>
-        <button type="button" class="help-close" id="helpClose" aria-label="Close shortcuts dialog">×</button>
-      </header>
-      <ul class="help-list">
-        <li><kbd>Space</kbd> <span>Play / Pause</span></li>
-        <li><kbd>→</kbd> / <kbd>←</kbd> <span>Next / Previous track</span></li>
-        <li><kbd>M</kbd> <span>Mute / Unmute audio</span></li>
-        <li><kbd>R</kbd> <span>Cycle Repeat mode (Off / All / One)</span></li>
-        <li><kbd>S</kbd> <span>Toggle Shuffle mode</span></li>
-        <li><kbd>F</kbd> <span>Favorite / Unfavorite track</span></li>
-        <li><kbd>B</kbd> <span>Ring Mandap Bell 🔔</span></li>
-        <li><kbd>K</kbd> <span>Sound Shankh Naad 🐚</span></li>
-        <li><kbd>?</kbd> <span>Toggle Shortcuts Help</span></li>
-      </ul>
-    </div>
-  </dialog>
 
   <script src="songs.js"></script>
   <script src="app.js"></script>
