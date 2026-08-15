@@ -75,6 +75,11 @@
     onlineCount: $("onlineCount"),
     toast: $("toast"),
     petals: $("petals"),
+    bellBtn: $("bellBtn"),
+    shankhBtn: $("shankhBtn"),
+    helpBtn: $("helpBtn"),
+    helpModal: $("helpModal"),
+    closeHelpBtn: $("closeHelpBtn"),
   };
 
   // ── State ────────────────────────────────────
@@ -678,11 +683,111 @@
     }
   }
 
+  // ── Mandap Ambient Audio Effects (Web Audio API) ──
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) {
+        audioCtx = new AudioContextClass();
+      }
+    }
+    if (audioCtx && audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  function ringBell() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const freqs = [1046.5, 2093, 3135.96, 4186];
+    freqs.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now);
+
+      const vol = 0.25 / (idx + 1);
+      gain.gain.setValueAtTime(vol, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 2.6);
+    });
+    showToast("🔔 Mandap Bell Chime");
+  }
+
+  function soundShankh() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.linearRampToValueAtTime(330, now + 0.6);
+    osc.frequency.linearRampToValueAtTime(311, now + 2.2);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(400, now);
+    filter.frequency.linearRampToValueAtTime(850, now + 0.8);
+    filter.frequency.linearRampToValueAtTime(450, now + 2.2);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.35, now + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 2.6);
+    showToast("🐚 Sacred Shankh Naad");
+  }
+
+  function toggleHelpModal() {
+    if (!el.helpModal) return;
+    if (el.helpModal.open) {
+      el.helpModal.close();
+    } else {
+      el.helpModal.showModal();
+    }
+  }
+
+  // ── Decorative bits ──────────────────────────
+  function spawnPetals(count = 18) {
+    if (!el.petals) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    el.petals.innerHTML = "";
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("span");
+      s.style.left = `${Math.random() * 100}%`;
+      s.style.animationDuration = `${10 + Math.random() * 14}s`;
+      s.style.animationDelay = `${-Math.random() * 16}s`;
+      s.style.opacity = String(0.25 + Math.random() * 0.4);
+      s.style.transform = `scale(${0.6 + Math.random() * 0.9})`;
+      el.petals.appendChild(s);
+    }
+  }
+
   function fakePresence() {
     const base = 12 + Math.floor(Math.random() * 40);
     const tick = () => {
       const n = clamp(base + Math.floor(Math.random() * 9) - 4, 3, 99);
-      el.onlineCount.textContent = String(n);
+      if (el.onlineCount) {
+        el.onlineCount.textContent = String(n);
+      }
     };
     tick();
     setInterval(tick, 8000 + Math.random() * 6000);
@@ -718,6 +823,17 @@
       case "f":
       case "F":
         toggleFavorite();
+        break;
+      case "b":
+      case "B":
+        ringBell();
+        break;
+      case "k":
+      case "K":
+        soundShankh();
+        break;
+      case "?":
+        toggleHelpModal();
         break;
       default:
         break;
@@ -825,6 +941,21 @@
       el.cover.classList.remove("is-missing");
     });
     el.cover.style.cursor = "pointer";
+
+    if (el.bellBtn) {
+      el.bellBtn.addEventListener("click", ringBell);
+    }
+    if (el.shankhBtn) {
+      el.shankhBtn.addEventListener("click", soundShankh);
+    }
+    if (el.helpBtn) {
+      el.helpBtn.addEventListener("click", toggleHelpModal);
+    }
+    if (el.closeHelpBtn) {
+      el.closeHelpBtn.addEventListener("click", () => {
+        if (el.helpModal) el.helpModal.close();
+      });
+    }
 
     setupMediaSessionActions();
     updateRepeatUI();
