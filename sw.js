@@ -3,20 +3,20 @@
  * Caches core shell assets for fast load times and basic offline support.
  */
 
-const CACHE_NAME = "ganesh-ai-v1";
+const CACHE_NAME = "ganesh-ai-v2";
 const ASSETS = [
-  "/",
-  "/index.html",
-  "/styles.css",
-  "/app.js",
-  "/songs.js",
-  "/favicon.png",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/ganesh-background.webp",
-  "/ganesh-background-mobile.webp",
-  "/ganesh-logo.webp",
-  "/manifest.webmanifest"
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./app.js",
+  "./songs.js",
+  "./favicon.png",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./ganesh-background.webp",
+  "./ganesh-background-mobile.webp",
+  "./ganesh-logo.webp",
+  "./manifest.webmanifest"
 ];
 
 self.addEventListener("install", (event) => {

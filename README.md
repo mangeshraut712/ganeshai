@@ -3,13 +3,13 @@
 > A little mandap on the internet: Marathi festival nostalgia, dhol-tasha energy, and one beautifully simple radio screen.
 
 <p align="center">
-  <a href="https://ganeshai.vercel.app/"><img src="https://img.shields.io/badge/Live%20experience-ganeshai.vercel.app-c2410c?style=for-the-badge&logo=vercel&logoColor=white" alt="Open the live GaneshAI experience" /></a>
+  <a href="https://mangeshraut712.github.io/ganeshai/"><img src="https://img.shields.io/badge/Live%20experience-GitHub%20Pages-c2410c?style=for-the-badge&logo=githubpages&logoColor=white" alt="Open the live GaneshAI experience" /></a>
   <a href="https://github.com/mangeshraut712/ganeshai"><img src="https://img.shields.io/badge/GitHub-ganeshai-171717?style=for-the-badge&logo=github&logoColor=white" alt="View GaneshAI on GitHub" /></a>
   <img src="https://img.shields.io/badge/Buildless-static%20web-f59e0b?style=for-the-badge" alt="Buildless static web project" />
 </p>
 
 <p align="center">
-  <a href="https://ganeshai.vercel.app/">Open the live experience</a> ·
+  <a href="https://mangeshraut712.github.io/ganeshai/">Open the live experience</a> ·
   <a href="https://github.com/mangeshraut712/ganeshai">View the source</a> ·
   <a href="https://github.com/mangeshraut712">Follow Mangesh Raut</a>
 </p>
@@ -52,7 +52,6 @@ The name keeps the heart of the festival in the first word and gives the project
 - Responsive layouts tested at desktop and narrow mobile widths, including 320 px.
 - Spotify and YouTube Music entry points for continuing the listening session on the original platforms.
 - GitHub-linked creator credit for [Mangesh Raut](https://github.com/mangeshraut712).
-- Production Web Analytics through Vercel’s privacy-friendly first-party loader.
 
 ## Listen
 
@@ -75,7 +74,7 @@ The generic visual language was replaced with a Ganeshotsav palette, mandap ligh
 
 ### 10 August 2026 — Public 2026 release
 
-The release locked `Ya Re Ya` as the opener, expanded the queue to 25 curated festival songs, corrected the Spotify and YouTube Music brand treatments, added the Mangesh Raut GitHub credit, and published the site on Vercel. The repository was then rebranded as `ganeshai` with focused GitHub topics, a release README, and visual home previews.
+The release locked `Ya Re Ya` as the opener, expanded the queue to 25 curated festival songs, corrected the Spotify and YouTube Music brand treatments, added the Mangesh Raut GitHub credit, and first published the site (later moved to GitHub Pages). The repository was then rebranded as `ganeshai` with focused GitHub topics, a release README, and visual home previews.
 
 ### 10 August 2026 — Alignment and thirty-track listening run
 
@@ -87,8 +86,7 @@ The player control rail was rebuilt around a three-column primary-action grid so
 2. `styles.css` provides the full-viewport composition, liquid-glass surfaces, responsive layout, focus states, and reduced-motion behavior.
 3. `songs.js` contains the curated track metadata and YouTube video IDs.
 4. `app.js` loads the official YouTube IFrame API, maps its state into the custom player, and manages progress, queue selection, shuffle, keyboard controls, and playback errors.
-5. `package.json` pins `@vercel/analytics`, while `index.html` loads Vercel’s documented static Web Analytics script at `/_vercel/insights/script.js`.
-6. The site is served as static files. There is no application server, database, build pipeline, or local audio storage.
+5. The site is served as static files from GitHub Pages. There is no application server, database, build pipeline, or local audio storage.
 
 ## Run locally
 
@@ -110,7 +108,7 @@ Opening `index.html` directly with a `file://` URL is not recommended because br
 | `styles.css` | Festival visual system, responsive rules, glass player, and accessibility states |
 | `app.js` | YouTube API integration and player interaction logic |
 | `songs.js` | 30-track Ganeshotsav queue and YouTube metadata |
-| `package.json` / `package-lock.json` | Vercel Web Analytics dependency and reproducible install |
+| `package.json` | Project metadata (no build step or runtime dependencies) |
 | `ganesh-background.webp` | Optimized full-bleed Ganesh festival background used by the live page |
 | `ganesh-background-mobile.webp` | Portrait crop optimized for narrow screens without changing the composition |
 | `ganesh-logo.webp` | Lightweight initial player artwork before the first YouTube thumbnail loads |
@@ -145,14 +143,9 @@ Keep the first entry as the desired opening track. Shuffle is handled in the UI 
 
 ## Deploy
 
-The project has no build step. To deploy the current directory to Vercel:
+The project has no build step. GitHub Pages publishes the repository root from `main` (workflow: `.github/workflows/pages.yml`).
 
-```bash
-vercel deploy . --prod
-```
-
-The current production site is [ganeshai.vercel.app](https://ganeshai.vercel.app/).
-Web Analytics is enabled for the Vercel project and is checked after deployment through the first-party script and page-view endpoint.
+The live site is [https://mangeshraut712.github.io/ganeshai/](https://mangeshraut712.github.io/ganeshai/).
 
 ## Verification
 
@@ -161,12 +154,11 @@ The 2026 release was checked with:
 ```bash
 node --check app.js
 node --check songs.js
-npm audit --omit=dev --audit-level=high
 ```
 
 The page was also opened through a local HTTP server and checked in a real browser at 1440×900, 390×844, and 320×844. The page had no horizontal overflow, the play button shared the control rail centerline, the opener was `Ya Re Ya`, and all 30 queue transitions matched their expected YouTube IDs before wrapping back to the opener.
 
-The production smoke check also confirmed `/_vercel/insights/script.js` and `/_vercel/insights/view` both respond successfully.
+The production smoke check confirms the GitHub Pages URL returns HTTP 200.
 
 ## Design notes and credits
 

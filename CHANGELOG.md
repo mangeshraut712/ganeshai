@@ -2,6 +2,14 @@
 
 All notable project milestones are recorded here. Dates use the India Standard Time release context for the 2026 build.
 
+## [2026.09.06] — GitHub Pages hosting
+
+### Changed
+
+- Moved hosting from the paused Vercel deployment to free GitHub Pages at `https://mangeshraut712.github.io/ganeshai/`.
+- Removed the Vercel Web Analytics loader and `@vercel/analytics` dependency.
+- Pointed canonical, Open Graph, and README live URLs at the Pages site.
+
 ## [2026.08.12] — Lighthouse and delivery optimization
 
 ### Improved

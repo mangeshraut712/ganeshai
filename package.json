@@ -2,8 +2,5 @@
   "name": "ganeshai",
   "version": "1.0.0",
   "private": true,
-  "description": "Ganeshotsav Radio — a Marathi Ganpati music experience.",
-  "dependencies": {
-    "@vercel/analytics": "^2.0.1"
-  }
+  "description": "Ganeshotsav Radio — a Marathi Ganpati music experience."
 }
