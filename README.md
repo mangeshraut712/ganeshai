@@ -30,6 +30,22 @@
   </p>
 </details>
 
+## Screenshots
+
+Framed captures of the live app (current UI).
+
+<div align="center">
+
+<img src="docs/screenshots/01-home.webp" alt="GaneshAI home screen: Ganesh Mahotsav title and liquid-glass player on Ya Re Ya" width="720" />
+
+<img src="docs/screenshots/02-queue.webp" alt="GaneshAI mandap queue open with the 30-song festival playlist" width="720" />
+
+<img src="docs/screenshots/03-shortcuts.webp" alt="GaneshAI keyboard shortcuts overlay on the radio screen" width="720" />
+
+<img src="docs/screenshots/04-search.webp" alt="GaneshAI playlist search showing matching festival tracks" width="720" />
+
+</div>
+
 ## The story
 
 Ganesh Chaturthi is remembered through small, familiar details: the first drumbeat from the next lane, aarti beginning at home, marigold strings over a neighbourhood entrance, and the song everyone knows before the chorus arrives.
