@@ -3,3 +3,6 @@ node_modules/
 .playwright-cli/
 output/playwright/
 .vercel/
+# Local agent tooling
+.agents/
+skills-lock.json
