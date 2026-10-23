@@ -6,7 +6,7 @@
   --marigold: #f6c767;
   --rose: #df715e;
   --cream: #fff5e8;
-  --muted: rgba(255, 245, 232, 0.62);
+  --muted: rgba(255, 245, 232, 0.86);
   --faint: rgba(255, 245, 232, 0.38);
   --line: rgba(255, 245, 232, 0.16);
   --glass: rgba(16, 6, 8, 0.48);
@@ -435,8 +435,8 @@ a,
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 38px;
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.16), rgba(62, 26, 30, 0.42) 45%, rgba(255, 255, 255, 0.08)),
-    rgba(24, 12, 17, 0.3);
+    linear-gradient(120deg, rgba(255, 255, 255, 0.12), rgba(42, 16, 20, 0.62) 45%, rgba(255, 255, 255, 0.06)),
+    rgba(12, 6, 8, 0.72);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(28px) saturate(145%);
 }
@@ -611,9 +611,13 @@ body.is-playing .equalizer .eq-bar:nth-child(4) { animation-duration: 0.8s; anim
   width: 100%;
   height: 14px;
   padding: 5px 0;
-  outline: none;
   background: transparent;
   cursor: pointer;
+}
+
+.scrub:focus-visible {
+  outline: 2px solid var(--marigold);
+  outline-offset: 3px;
 }
 
 .scrub .track {
@@ -904,15 +908,15 @@ body.is-playing .equalizer .eq-bar:nth-child(4) { animation-duration: 0.8s; anim
 .queue-kicker {
   color: var(--saffron);
   font-family: var(--mono);
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 #queueCount {
-  color: var(--faint);
+  color: rgba(255, 245, 232, 0.88);
   font-family: var(--mono);
-  font-size: 8px;
+  font-size: 11px;
   white-space: nowrap;
 }
 
@@ -947,11 +951,12 @@ body.is-playing .equalizer .eq-bar:nth-child(4) { animation-duration: 0.8s; anim
   background: rgba(0, 0, 0, 0.25);
   color: var(--cream);
   font-size: 13px;
-  outline: none;
 }
 
-.queue-search:focus {
+.queue-search:focus-visible {
   border-color: var(--marigold);
+  outline: 2px solid var(--marigold);
+  outline-offset: 2px;
 }
 
 .search-clear {
@@ -1000,6 +1005,12 @@ body.is-playing .equalizer .eq-bar:nth-child(4) { animation-duration: 0.8s; anim
   margin: 0;
   padding: 10px;
   list-style: none;
+}
+
+.queue-row {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .queue-item {
@@ -1051,13 +1062,13 @@ body.is-playing .equalizer .eq-bar:nth-child(4) { animation-duration: 0.8s; anim
 }
 
 .q-title {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .q-artist {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 11px;
 }
 
 .q-trail {
@@ -1229,6 +1240,11 @@ body.queue-open .footer {
     gap: 10px;
   }
 
+  .mandap-fx-bar,
+  .fx-cluster {
+    flex-wrap: wrap;
+  }
+
   .source-label {
     display: none;
   }
@@ -1397,6 +1413,7 @@ body.queue-open .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   width: 100%;
   padding-bottom: 6px;
   border-bottom: 1px solid rgba(255, 245, 232, 0.08);
@@ -1444,7 +1461,8 @@ body.queue-open .footer {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 10px;
+  min-height: 32px;
+  padding: 6px 10px;
   border: 1px solid rgba(255, 245, 232, 0.14);
   border-radius: 999px;
   background: rgba(255, 245, 232, 0.06);
@@ -1453,7 +1471,7 @@ body.queue-open .footer {
   font-weight: 600;
   cursor: pointer;
   backdrop-filter: blur(8px);
-  transition: all 180ms ease;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
 .fx-btn:hover,
