@@ -168,9 +168,10 @@ The live site is [https://mangeshraut712.github.io/ganeshai/](https://mangeshrau
 The 2026 release was checked with:
 
 ```bash
-node --check app.js
-node --check songs.js
+npm run check
 ```
+
+That runs the syntax lint, the playback and security unit tests, and the static site build.
 
 The page was also opened through a local HTTP server and checked in a real browser at 1440×900, 390×844, and 320×844. The page had no horizontal overflow, the play button shared the control rail centerline, the opener was `Ya Re Ya`, and all 30 queue transitions matched their expected YouTube IDs before wrapping back to the opener.
 

@@ -31,8 +31,9 @@
   <link rel="preload" href="ganesh-background.webp" as="image" type="image/webp" fetchpriority="high" media="(min-width: 561px)" />
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png" />
   <style>
-    :root{--ink:#100607;--saffron:#f1a343;--marigold:#f6c767;--cream:#fff5e8;--muted:rgba(255,245,232,.62);--sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--dev:"Noto Sans Devanagari","Kohinoor Devanagari",Mangal,var(--sans)}
+    :root{--ink:#100607;--saffron:#f1a343;--marigold:#f6c767;--cream:#fff5e8;--muted:rgba(255,245,232,.86);--sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--dev:"Noto Sans Devanagari","Kohinoor Devanagari",Mangal,var(--sans)}
     *,::after,::before{box-sizing:border-box}html,body{min-height:100%;margin:0}html{background:#101722}body{position:relative;isolation:isolate;min-height:100dvh;overflow-x:hidden;color:var(--cream);background:#101722;font-family:var(--sans)}
+    .skip-link{position:absolute;top:12px;left:12px;z-index:20;padding:8px 12px;border-radius:999px;background:var(--marigold);color:var(--ink);font-size:12px;font-weight:700;transform:translateY(-160%)}.skip-link:focus{transform:none}
     a,button{color:inherit;font:inherit}button{border:0;background:0 0}a{text-decoration:none}img{display:block;max-width:100%}[hidden]{display:none!important}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     .backdrop,.backdrop>*{position:fixed;inset:0;pointer-events:none}.backdrop{z-index:-1;overflow:hidden;background:radial-gradient(60% 60% at 50% 28%,rgba(163,55,36,.75),transparent 72%),linear-gradient(145deg,#3b121a 0,#1a080d 55%,#080304 100%)}
@@ -52,7 +53,7 @@
     .hero-title{margin:0;line-height:.9;transform:translateY(1vh)}
     .hero-title-marathi{display:block;color:#fffaf2;font-family:var(--dev);font-size:clamp(3.2rem,7.5vw,7rem);font-weight:700;letter-spacing:-.08em;line-height:.9;text-shadow:0 8px 34px rgba(0,0,0,.62)}
     .player-zone{width:min(100%,640px);margin:0 auto}
-    .player{position:relative;display:flex;flex-direction:column;gap:8px;padding:14px 20px 16px;border:1px solid rgba(255,255,255,.25);border-radius:38px;background:linear-gradient(120deg,rgba(255,255,255,.16),rgba(62,26,30,.42) 45%,rgba(255,255,255,.08)),rgba(24,12,17,.3);box-shadow:0 24px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.24);backdrop-filter:blur(28px) saturate(145%)}
+    .player{position:relative;display:flex;flex-direction:column;gap:8px;padding:14px 20px 16px;border:1px solid rgba(255,255,255,.25);border-radius:38px;background:linear-gradient(120deg,rgba(255,255,255,.12),rgba(42,16,20,.62) 45%,rgba(255,255,255,.06)),rgba(12,6,8,.72);box-shadow:0 24px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.24);backdrop-filter:blur(28px) saturate(145%)}
     .player-main{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;min-height:76px;padding:8px}
     .cover,.cover-shell{width:58px;height:58px}.cover{object-fit:cover;border:1.5px solid rgba(255,255,255,.35);border-radius:50%;background:radial-gradient(circle at 50% 35%,#f4bc63,#7a1e22 72%,#1b080b)}
     .title{margin:0;overflow:hidden;font-size:clamp(13px,1.45vw,17px);font-weight:700;text-overflow:ellipsis;white-space:nowrap}
@@ -103,7 +104,9 @@
 
     <div class="presence" title="Ganeshotsav Radio is live">
       <span class="presence-dot" aria-hidden="true"></span>
-      Live · <span id="onlineCount">18</span> listening
+      <span>Live</span>
+      <span class="sr-only">broadcast</span>
+      <span aria-hidden="true">· <span id="onlineCount">18</span> listening</span>
     </div>
 
     <nav class="source-links" aria-label="Listen on">
@@ -136,10 +139,10 @@
     </section>
 
     <section class="player-zone" aria-label="Ganeshotsav music player">
-      <div class="player" id="player-card">
+      <div class="player" id="player-card" tabindex="-1">
         <div class="player-topline" aria-hidden="true"></div>
 
-        <div class="mandap-fx-bar" aria-label="Mandap ambient sounds">
+          <div class="mandap-fx-bar" role="group" aria-label="Mandap ambient sounds">
           <div class="mandap-badge">
             <span class="mandap-badge-dot" aria-hidden="true"></span>
             <span class="mandap-badge-text">Mandap Radio</span>
@@ -200,7 +203,7 @@
           </div>
         </div>
 
-        <div class="controls" aria-label="Playback controls">
+        <div class="controls" role="group" aria-label="Playback controls">
           <div class="control-cluster control-cluster-left">
             <button type="button" class="ctrl ctrl-quiet" id="shuffle" aria-pressed="false" aria-label="Turn shuffle on" title="Shuffle (S)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M15 15l6 6m0-5v5h-5M4 4l5 5" /></svg>
@@ -248,23 +251,23 @@
             <span class="queue-kicker">The mandap queue</span>
             <h3>Festival playlist</h3>
           </div>
-          <span id="queueCount">0 songs</span>
+          <span id="queueCount" aria-live="polite">0 songs</span>
         </div>
 
         <div class="queue-controls">
           <div class="queue-search-wrap">
             <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <input type="search" class="queue-search" id="queueSearch" placeholder="Search song, artist, album…" aria-label="Search playlist" autocomplete="off" />
+            <input type="search" class="queue-search" id="queueSearch" placeholder="Search song, artist, album…" aria-label="Search playlist" aria-controls="queueList" autocomplete="off" />
             <button type="button" class="search-clear" id="searchClear" aria-label="Clear search" hidden>×</button>
           </div>
 
           <div class="queue-filter-tabs" role="tablist" aria-label="Filter playlist">
-            <button type="button" class="filter-tab is-active" id="filterAll" role="tab" aria-selected="true" aria-controls="queueList">All Songs</button>
-            <button type="button" class="filter-tab" id="filterFavs" role="tab" aria-selected="false" aria-controls="queueList">Favorites <span class="fav-badge" id="favCount">0</span></button>
+            <button type="button" class="filter-tab is-active" id="filterAll" role="tab" aria-selected="true" aria-controls="queueList" tabindex="0">All Songs</button>
+            <button type="button" class="filter-tab" id="filterFavs" role="tab" aria-selected="false" aria-controls="queueList" tabindex="-1">Favorites <span class="fav-badge" id="favCount">0</span></button>
           </div>
         </div>
 
-        <ol class="queue-list" id="queueList" role="tabpanel"></ol>
+        <ol class="queue-list" id="queueList" role="tabpanel" aria-labelledby="filterAll"></ol>
         <div class="queue-empty" id="queueEmpty" hidden>No matching songs found in the mandap queue.</div>
       </aside>
     </section>
@@ -303,6 +306,7 @@
   </dialog>
 
   <script src="songs.js" defer></script>
-  <script src="app.js" defer></script>
+  <link rel="modulepreload" href="radio-core.js" />
+  <script type="module" src="app.js"></script>
 </body>
 </html>

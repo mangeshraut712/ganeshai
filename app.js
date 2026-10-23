@@ -4,10 +4,31 @@
  * Video is hidden; audio still streams from YouTube.
  */
 
+import {
+  arrangeQueue,
+  artworkUrl,
+  cycleRepeatMode,
+  endedAction,
+  filterQueue,
+  formatTime,
+  moveTab,
+  msUntilNextMinute,
+  parseFavorites,
+  parseMuted,
+  parseRepeatMode,
+  parseVolume,
+  playbackErrorDecision,
+  playerReadyPlan,
+  previousAction,
+  sanitizeCatalog,
+  shortcutAction,
+  watchUrl,
+} from "./radio-core.js";
+
 (() => {
   "use strict";
 
-  const SONGS = Array.isArray(window.GANESH_SONGS) ? window.GANESH_SONGS.slice() : [];
+  const SONGS = sanitizeCatalog(window.GANESH_SONGS);
   if (!SONGS.length) {
     console.error("No songs loaded. Check songs.js");
     return;
@@ -29,14 +50,9 @@
     }
   };
 
-  const readFavorites = () => {
-    try {
-      const stored = JSON.parse(storageGet("ganesh_favs", "[]"));
-      return new Set(Array.isArray(stored) ? stored.filter((id) => typeof id === "string") : []);
-    } catch {
-      return new Set();
-    }
-  };
+  const readFavorites = () => new Set(
+    parseFavorites(storageGet("ganesh_favs", "[]"), SONGS.map((song) => song.id)),
+  );
 
   // ── DOM ──────────────────────────────────────
   const $ = (id) => document.getElementById(id);
@@ -89,11 +105,9 @@
   let ready = false;
   let playing = false;
   let shuffleOn = false;
-  const storedRepeat = storageGet("ganesh_repeat", "off");
-  let repeatMode = ["off", "all", "one"].includes(storedRepeat) ? storedRepeat : "off";
-  const storedVolume = Number.parseInt(storageGet("ganesh_volume", "100"), 10);
-  let volume = Number.isFinite(storedVolume) ? Math.min(100, Math.max(0, storedVolume)) : 100;
-  let isMuted = storageGet("ganesh_muted", "false") === "true";
+  let repeatMode = parseRepeatMode(storageGet("ganesh_repeat", "off"));
+  let volume = parseVolume(storageGet("ganesh_volume", "100"));
+  let isMuted = parseMuted(storageGet("ganesh_muted", "false"));
   let favorites = readFavorites();
   let searchQuery = "";
   let activeTab = "all"; // "all" | "favs"
@@ -103,20 +117,13 @@
   let toastTimer = null;
   let skipTimer = null;
   let userStarted = false;
+  let consecutiveErrors = 0;
 
   const START_SECONDS = 0;
+  const PLAYER_READY_TIMEOUT_MS = 15_000;
 
   // ── Helpers ──────────────────────────────────
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
-  const fmt = (s) => {
-    s = Math.max(0, Math.floor(s || 0));
-    const m = Math.floor(s / 60);
-    const r = s % 60;
-    return `${m}:${String(r).padStart(2, "0")}`;
-  };
-  const thumb = (id, quality = "default") =>
-    `https://i.ytimg.com/vi/${id}/${quality}.jpg`;
-  const ytWatch = (id) => `https://www.youtube.com/watch?v=${id}`;
 
   function showToast(msg, ms = 2600) {
     if (!el.toast) return;
@@ -144,24 +151,20 @@
       minute: "2-digit",
     }).format(now);
     el.clock.dateTime = now.toISOString();
+    return now;
   }
 
-  function reshuffle(keepCurrent = true) {
-    const currentId = currentSong()?.id;
-    order = SONGS.map((_, i) => i);
-    if (shuffleOn) {
-      for (let i = order.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [order[i], order[j]] = [order[j], order[i]];
-      }
+  function syncTransportLabels() {
+    const song = currentSong();
+    const action = playing ? "Pause" : "Play";
+    const label = song ? `${action} ${song.title}` : action;
+    if (el.play && el.play.getAttribute("aria-busy") !== "true") {
+      el.play.setAttribute("aria-label", label);
+      el.play.title = action;
     }
-    if (keepCurrent && currentId) {
-      const at = order.findIndex((i) => SONGS[i].id === currentId);
-      if (at > 0) {
-        order.splice(at, 1);
-        order.unshift(SONGS.findIndex((s) => s.id === currentId));
-        index = 0;
-      }
+    if (el.cover && song) {
+      el.cover.alt = `${song.title} cover art`;
+      el.cover.setAttribute("aria-label", label);
     }
   }
 
@@ -172,10 +175,15 @@
       title: song.title,
       artist: song.artist,
       album: song.album || "Ganeshotsav Radio",
-      artwork: [
-        { src: thumb(song.youtubeId, "hqdefault"), sizes: "480x360", type: "image/jpeg" },
-        { src: thumb(song.youtubeId, "maxresdefault"), sizes: "1280x720", type: "image/jpeg" },
-      ]
+      artwork: ["hqdefault", "maxresdefault"].flatMap((quality) => {
+        const src = artworkUrl(song.youtubeId, quality);
+        if (!src) return [];
+        return [{
+          src,
+          sizes: quality === "hqdefault" ? "480x360" : "1280x720",
+          type: "image/jpeg",
+        }];
+      }),
     });
   }
 
@@ -206,6 +214,10 @@
   function applyVolume() {
     if (el.volSlider) el.volSlider.value = String(volume);
     if (el.volumeControl) el.volumeControl.classList.toggle("is-muted", isMuted);
+    if (el.muteBtn) {
+      el.muteBtn.setAttribute("aria-pressed", String(isMuted));
+      el.muteBtn.setAttribute("aria-label", isMuted ? "Unmute" : "Mute");
+    }
     if (ready && player) {
       if (isMuted) {
         player.mute();
@@ -239,15 +251,13 @@
     const isOne = repeatMode === "one";
 
     el.repeat.classList.toggle("is-active", isAll || isOne);
+    el.repeat.setAttribute("aria-pressed", String(isAll || isOne));
     if (el.repeatBadge) el.repeatBadge.hidden = !isOne;
     el.repeat.setAttribute("aria-label", `Repeat mode: ${repeatMode}`);
   }
 
   function cycleRepeat() {
-    if (repeatMode === "off") repeatMode = "all";
-    else if (repeatMode === "all") repeatMode = "one";
-    else repeatMode = "off";
-
+    repeatMode = cycleRepeatMode(repeatMode);
     storageSet("ganesh_repeat", repeatMode);
     updateRepeatUI();
     const msgs = { off: "Repeat off", all: "Repeat playlist on", one: "Repeat single track on" };
@@ -259,6 +269,7 @@
     if (!song || !el.favBtn) return;
     const isFav = favorites.has(song.id);
     el.favBtn.classList.toggle("is-favorite", isFav);
+    el.favBtn.setAttribute("aria-pressed", String(isFav));
     el.favBtn.setAttribute("aria-label", isFav ? "Remove from favorites" : "Add to favorites");
     if (el.favCount) el.favCount.textContent = String(favorites.size);
   }
@@ -283,9 +294,12 @@
     if (!song) return;
     el.title.textContent = song.title;
     el.artist.textContent = song.artist + (song.album ? ` · ${song.album}` : "");
-    if (updateArtwork) el.cover.src = thumb(song.youtubeId);
-    el.cover.alt = `${song.title} cover art`;
-    el.openYt.href = ytWatch(song.youtubeId);
+    if (updateArtwork) {
+      const coverUrl = artworkUrl(song.youtubeId);
+      if (coverUrl) el.cover.src = coverUrl;
+    }
+    el.openYt.href = watchUrl(song.youtubeId);
+    syncTransportLabels();
     document.title = `${song.title} · GaneshAI Radio`;
     updateFavUI();
     updateMediaSession(song);
@@ -296,9 +310,8 @@
     playing = isPlaying;
     setBufferingUI(false);
     el.play.classList.toggle("is-playing", isPlaying);
-    el.play.setAttribute("aria-label", isPlaying ? "Pause" : "Play");
-    el.play.title = isPlaying ? "Pause" : "Play";
     document.body.classList.toggle("is-playing", isPlaying);
+    syncTransportLabels();
   }
 
   function setBufferingUI(isBuffering) {
@@ -306,6 +319,7 @@
     el.play.setAttribute("aria-busy", String(isBuffering));
     if (isBuffering) {
       el.play.dataset.buffering = "true";
+      el.play.setAttribute("aria-label", "Loading playback");
     } else {
       delete el.play.dataset.buffering;
     }
@@ -320,9 +334,9 @@
       el.knob.style.left = `${pct}%`;
       el.scrub.setAttribute("aria-valuenow", String(Math.round(pct)));
     }
-    el.currentTime.textContent = fmt(c);
-    el.duration.textContent = d ? fmt(d) : "0:00";
-    el.scrub.setAttribute("aria-valuetext", `${fmt(c)} of ${fmt(d)}`);
+    el.currentTime.textContent = formatTime(c);
+    el.duration.textContent = d ? formatTime(d) : "0:00";
+    el.scrub.setAttribute("aria-valuetext", `${formatTime(c)} of ${formatTime(d)}`);
   }
 
   function tickProgress() {
@@ -349,56 +363,86 @@
   }
 
   // ── Queue ────────────────────────────────────
+  function hydrateQueueImages() {
+    if (!el.queueList) return;
+    el.queueList.querySelectorAll("img[data-src]").forEach((img) => {
+      img.src = img.dataset.src;
+      img.removeAttribute("data-src");
+    });
+  }
+
   function buildQueue() {
     if (!el.queueList) return;
-    el.queueList.innerHTML = "";
-    const q = searchQuery.trim().toLowerCase();
-
-    const filteredIndices = order.filter((songIndex) => {
-      const song = SONGS[songIndex];
-      if (activeTab === "favs" && !favorites.has(song.id)) {
-        return false;
-      }
-      if (!q) return true;
-      return (
-        song.title.toLowerCase().includes(q) ||
-        song.artist.toLowerCase().includes(q) ||
-        (song.album && song.album.toLowerCase().includes(q))
-      );
+    const filteredIndices = filterQueue(SONGS, order, {
+      query: searchQuery,
+      tab: activeTab,
+      favoriteIds: favorites,
     });
+    const queueVisible = el.queue && !el.queue.hidden;
 
     el.queueCount.textContent = `${filteredIndices.length} song${filteredIndices.length === 1 ? "" : "s"}`;
     if (el.favCount) el.favCount.textContent = String(favorites.size);
     if (el.queueEmpty) el.queueEmpty.hidden = filteredIndices.length > 0;
 
-    filteredIndices.forEach((songIndex) => {
+    const rows = filteredIndices.map((songIndex) => {
       const song = SONGS[songIndex];
       const playIndex = order.indexOf(songIndex);
       const isFav = favorites.has(song.id);
+
+      const row = document.createElement("li");
+      row.className = "queue-row";
 
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "queue-item";
       btn.dataset.playIndex = String(playIndex);
-      btn.innerHTML = `
-        <img src="${thumb(song.youtubeId, "mqdefault")}" alt="" loading="lazy" width="40" height="40" />
-        <span class="q-meta">
-          <span class="q-title"></span>
-          <span class="q-artist"></span>
-        </span>
-        <span class="q-fav-tag">${isFav ? "❤️" : ""}</span>
-        <span class="q-now">Now</span>
-      `;
-      btn.querySelector(".q-title").textContent = song.title;
-      btn.querySelector(".q-artist").textContent = song.artist;
+      btn.setAttribute("aria-label", `Play ${song.title} by ${song.artist}`);
+
+      const img = document.createElement("img");
+      img.alt = "";
+      img.width = 40;
+      img.height = 40;
+      img.loading = "lazy";
+      img.decoding = "async";
+      const src = artworkUrl(song.youtubeId, "mqdefault");
+      if (src && queueVisible) img.src = src;
+      else if (src) img.dataset.src = src;
+
+      const meta = document.createElement("span");
+      meta.className = "q-meta";
+      const title = document.createElement("span");
+      title.className = "q-title";
+      title.textContent = song.title;
+      const artist = document.createElement("span");
+      artist.className = "q-artist";
+      artist.textContent = song.artist;
+      meta.append(title, artist);
+
+      const fav = document.createElement("span");
+      fav.className = "q-fav-tag";
+      fav.setAttribute("aria-hidden", "true");
+      fav.textContent = isFav ? "❤️" : "";
+
+      const now = document.createElement("span");
+      now.className = "q-now";
+      now.textContent = "Now";
+
+      const trail = document.createElement("span");
+      trail.className = "q-trail";
+      trail.append(fav, now);
+
+      btn.append(img, meta, trail);
       btn.addEventListener("click", () => {
         index = playIndex;
         userStarted = true;
+        consecutiveErrors = 0;
         loadAndPlay(true);
         showToast(`Playing · ${song.title}`);
       });
-      el.queueList.appendChild(btn);
+      row.append(btn);
+      return row;
     });
+    el.queueList.replaceChildren(...rows);
     highlightQueue();
   }
 
@@ -407,7 +451,10 @@
     const items = el.queueList.querySelectorAll(".queue-item");
     items.forEach((node) => {
       const i = Number(node.dataset.playIndex);
-      node.classList.toggle("is-active", i === index);
+      const active = i === index;
+      node.classList.toggle("is-active", active);
+      if (active) node.setAttribute("aria-current", "true");
+      else node.removeAttribute("aria-current");
     });
   }
 
@@ -434,35 +481,69 @@
     const YT = await loadYouTubeAPI();
     const song = currentSong();
 
-    return new Promise((resolve) => {
-      player = new YT.Player("yt-player", {
-        height: "1",
-        width: "1",
-        videoId: song.youtubeId,
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-          origin: window.location.origin,
-          start: START_SECONDS,
-        },
-        events: {
-          onReady: (e) => {
-            ready = true;
-            applyVolume();
-            updateMeta(song);
-            setProgress(0, 0);
-            resolve(player);
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error("YouTube player timed out"));
+      }, PLAYER_READY_TIMEOUT_MS);
+
+      let created;
+      try {
+        created = new YT.Player("yt-player", {
+          height: "1",
+          width: "1",
+          videoId: song.youtubeId,
+          playerVars: {
+            autoplay: 0,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            modestbranding: 1,
+            rel: 0,
+            playsinline: 1,
+            origin: window.location.origin,
+            start: START_SECONDS,
           },
-          onStateChange: onStateChange,
-          onError: onPlayerError,
-        },
-      });
+          events: {
+            onReady: (event) => {
+              clearTimeout(timer);
+              ready = true;
+              player = event.target;
+              applyVolume();
+              const latest = currentSong();
+              const plan = playerReadyPlan({
+                createdVideoId: song.youtubeId,
+                currentVideoId: latest?.youtubeId,
+                userStarted,
+              });
+              if (plan.action === "load") {
+                player.loadVideoById({ videoId: plan.videoId, startSeconds: START_SECONDS });
+              } else if (plan.action === "cue") {
+                player.cueVideoById({ videoId: plan.videoId, startSeconds: START_SECONDS });
+              }
+              updateMeta(latest);
+              setProgress(0, 0);
+              resolve({ player, switched: plan.action !== "stay" });
+            },
+            onStateChange,
+            onError: onPlayerError,
+          },
+        });
+      } catch (error) {
+        clearTimeout(timer);
+        reject(error);
+        return;
+      }
+      player = created;
     });
+  }
+
+  function resetPlayerMount() {
+    const host = document.getElementById("yt-host");
+    if (!host) return;
+    host.replaceChildren();
+    const mount = document.createElement("div");
+    mount.id = "yt-player";
+    host.append(mount);
   }
 
   async function ensurePlayer(autoplay = false) {
@@ -475,15 +556,18 @@
       setBufferingUI(true);
       playerPromise = createPlayer().catch((error) => {
         playerPromise = null;
+        ready = false;
+        player = null;
+        resetPlayerMount();
         setBufferingUI(false);
         throw error;
       });
     }
 
     try {
-      const instance = await playerPromise;
-      if (autoplay) instance.playVideo();
-      return instance;
+      const result = await playerPromise;
+      if (autoplay && result && !result.switched) result.player.playVideo();
+      return result?.player ?? null;
     } catch (error) {
       console.error(error);
       showToast("Could not reach YouTube. Check your connection.");
@@ -495,6 +579,7 @@
     const S = window.YT.PlayerState;
     switch (event.data) {
       case S.PLAYING:
+        consecutiveErrors = 0;
         setPlayingUI(true);
         startProgressLoop();
         tickProgress();
@@ -504,18 +589,20 @@
         stopProgressLoop();
         tickProgress();
         break;
-      case S.ENDED:
+      case S.ENDED: {
         setPlayingUI(false);
         stopProgressLoop();
-        if (repeatMode === "one") {
+        const action = endedAction({ repeatMode, index, length: order.length });
+        if (action === "restart") {
           player.seekTo(0, true);
           player.playVideo();
-        } else if (repeatMode === "off" && index === order.length - 1) {
+        } else if (action === "stop") {
           showToast("End of playlist");
         } else {
           playNext(true);
         }
         break;
+      }
       case S.BUFFERING:
         setBufferingUI(true);
         break;
@@ -531,6 +618,15 @@
     console.warn("YouTube error", event.data, currentSong()?.title, currentSong()?.youtubeId);
     setPlayingUI(false);
     if (skipTimer) return;
+    consecutiveErrors += 1;
+    const decision = playbackErrorDecision({
+      consecutiveErrors,
+      queueLength: order.length,
+    });
+    if (decision === "stop") {
+      showToast("None of these tracks can play right now.");
+      return;
+    }
     showToast("This track can’t play here — skipping…");
     skipTimer = setTimeout(() => {
       skipTimer = null;
@@ -545,14 +641,14 @@
       clearTimeout(skipTimer);
       skipTimer = null;
     }
-    setBufferingUI(false);
     updateMeta(song);
     setProgress(0, 0);
 
-    if (!player) {
+    if (!ready || !player || typeof player.loadVideoById !== "function") {
       if (autoplay && userStarted) ensurePlayer(true);
       return;
     }
+    setBufferingUI(false);
 
     const payload = { videoId: song.youtubeId, startSeconds: START_SECONDS };
     try {
@@ -586,23 +682,27 @@
   }
 
   function playNext(fromEnded = false) {
+    if (!fromEnded) consecutiveErrors = 0;
     index = (index + 1) % order.length;
     userStarted = true;
     loadAndPlay(true);
   }
 
   function playPrev() {
+    let currentTime = 0;
     try {
-      const t = player?.getCurrentTime?.() || 0;
-      if (t > 3) {
-        player.seekTo(0, true);
-        setProgress(0, player.getDuration?.() || 0);
-        return;
-      }
+      currentTime = player?.getCurrentTime?.() || 0;
     } catch {
-      /* ignore */
+      currentTime = 0;
     }
-    index = (index - 1 + order.length) % order.length;
+    consecutiveErrors = 0;
+    const action = previousAction({ currentTime, index, length: order.length });
+    if (action.type === "restart" && player && typeof player.seekTo === "function") {
+      player.seekTo(0, true);
+      setProgress(0, player.getDuration?.() || 0);
+      return;
+    }
+    index = action.index;
     userStarted = true;
     loadAndPlay(true);
   }
@@ -671,16 +771,17 @@
     if (!el.petals) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
-    el.petals.innerHTML = "";
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement("span");
-      s.style.left = `${Math.random() * 100}%`;
-      s.style.animationDuration = `${10 + Math.random() * 14}s`;
-      s.style.animationDelay = `${-Math.random() * 16}s`;
-      s.style.opacity = String(0.25 + Math.random() * 0.4);
-      s.style.transform = `scale(${0.6 + Math.random() * 0.9})`;
-      el.petals.appendChild(s);
+    const petals = [];
+    for (let i = 0; i < count; i += 1) {
+      const petal = document.createElement("span");
+      petal.style.left = `${Math.random() * 100}%`;
+      petal.style.animationDuration = `${10 + Math.random() * 14}s`;
+      petal.style.animationDelay = `${-Math.random() * 16}s`;
+      petal.style.opacity = String(0.25 + Math.random() * 0.4);
+      petal.style.transform = `scale(${0.6 + Math.random() * 0.9})`;
+      petals.push(petal);
     }
+    el.petals.replaceChildren(...petals);
   }
 
   // ── Mandap Ambient Audio Effects (Web Audio API) ──
@@ -764,80 +865,101 @@
     }
   }
 
-  // ── Decorative bits ──────────────────────────
-  function spawnPetals(count = 18) {
-    if (!el.petals) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-    el.petals.innerHTML = "";
-    for (let i = 0; i < count; i++) {
-      const s = document.createElement("span");
-      s.style.left = `${Math.random() * 100}%`;
-      s.style.animationDuration = `${10 + Math.random() * 14}s`;
-      s.style.animationDelay = `${-Math.random() * 16}s`;
-      s.style.opacity = String(0.25 + Math.random() * 0.4);
-      s.style.transform = `scale(${0.6 + Math.random() * 0.9})`;
-      el.petals.appendChild(s);
-    }
-  }
-
   function fakePresence() {
     const base = 12 + Math.floor(Math.random() * 40);
     const tick = () => {
+      if (document.hidden) return;
       const n = clamp(base + Math.floor(Math.random() * 9) - 4, 3, 99);
-      if (el.onlineCount) {
-        el.onlineCount.textContent = String(n);
-      }
+      if (el.onlineCount) el.onlineCount.textContent = String(n);
     };
     tick();
     setInterval(tick, 8000 + Math.random() * 6000);
   }
 
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
+    const register = () => {
+      navigator.serviceWorker.register("./sw.js", { type: "module" }).catch((error) => {
+        console.warn("Service worker registration failed", error);
+      });
+    };
+    if (document.readyState === "complete") register();
+    else window.addEventListener("load", register, { once: true });
+  }
+
   // ── Keyboard ─────────────────────────────────
   function onKey(e) {
-    if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
-    if (e.target === el.scrub) return;
-    switch (e.key) {
-      case " ":
+    const action = shortcutAction({
+      key: e.key,
+      tagName: e.target?.tagName,
+      role: e.target?.getAttribute?.("role") || "",
+      modalOpen: Boolean(el.helpModal?.open),
+      editable: Boolean(e.target?.isContentEditable),
+    });
+    if (!action) return;
+
+    if (action.type === "tab") {
+      e.preventDefault();
+      selectTab(moveTab(activeTab, action.key), { focus: true });
+      return;
+    }
+
+    switch (action.type) {
+      case "toggle-play":
         e.preventDefault();
         togglePlay();
         break;
-      case "ArrowRight":
+      case "next":
         playNext();
         break;
-      case "ArrowLeft":
+      case "prev":
         playPrev();
         break;
-      case "m":
-      case "M":
+      case "mute":
         toggleMute();
         break;
-      case "r":
-      case "R":
+      case "repeat":
         cycleRepeat();
         break;
-      case "s":
-      case "S":
-        el.shuffle.click();
+      case "shuffle":
+        el.shuffle?.click();
         break;
-      case "f":
-      case "F":
+      case "favorite":
         toggleFavorite();
         break;
-      case "b":
-      case "B":
+      case "bell":
         ringBell();
         break;
-      case "k":
-      case "K":
+      case "shankh":
         soundShankh();
         break;
-      case "?":
+      case "help":
+        e.preventDefault();
         toggleHelpModal();
         break;
       default:
         break;
     }
+  }
+
+  function selectTab(tab, { focus = false } = {}) {
+    activeTab = tab === "favs" ? "favs" : "all";
+    const tabs = [
+      [el.filterAll, "all"],
+      [el.filterFavs, "favs"],
+    ];
+    tabs.forEach(([node, name]) => {
+      if (!node) return;
+      const selected = name === activeTab;
+      node.classList.toggle("is-active", selected);
+      node.setAttribute("aria-selected", String(selected));
+      node.tabIndex = selected ? 0 : -1;
+      if (selected && focus) node.focus();
+    });
+    if (el.queueList) {
+      el.queueList.setAttribute("aria-labelledby", activeTab === "favs" ? "filterFavs" : "filterAll");
+    }
+    buildQueue();
   }
 
   // ── Wire events ──────────────────────────────
@@ -855,7 +977,10 @@
     el.shuffle.addEventListener("click", () => {
       shuffleOn = !shuffleOn;
       el.shuffle.setAttribute("aria-pressed", String(shuffleOn));
-      reshuffle(true);
+      el.shuffle.setAttribute("aria-label", shuffleOn ? "Turn shuffle off" : "Turn shuffle on");
+      const arranged = arrangeQueue(SONGS, { shuffle: shuffleOn, currentId: currentSong()?.id });
+      order = arranged.order;
+      index = arranged.index;
       buildQueue();
       showToast(shuffleOn ? "Shuffle on · मोरया!" : "Shuffle off");
     });
@@ -870,7 +995,7 @@
 
     if (el.volSlider) {
       el.volSlider.addEventListener("input", (e) => {
-        setVolume(Number(e.target.value));
+        setVolume(parseVolume(e.target.value));
       });
     }
 
@@ -895,27 +1020,8 @@
       });
     }
 
-    if (el.filterAll) {
-      el.filterAll.addEventListener("click", () => {
-        activeTab = "all";
-        el.filterAll.classList.add("is-active");
-        el.filterFavs.classList.remove("is-active");
-        el.filterAll.setAttribute("aria-selected", "true");
-        el.filterFavs.setAttribute("aria-selected", "false");
-        buildQueue();
-      });
-    }
-
-    if (el.filterFavs) {
-      el.filterFavs.addEventListener("click", () => {
-        activeTab = "favs";
-        el.filterFavs.classList.add("is-active");
-        el.filterAll.classList.remove("is-active");
-        el.filterFavs.setAttribute("aria-selected", "true");
-        el.filterAll.setAttribute("aria-selected", "false");
-        buildQueue();
-      });
-    }
+    if (el.filterAll) el.filterAll.addEventListener("click", () => selectTab("all"));
+    if (el.filterFavs) el.filterFavs.addEventListener("click", () => selectTab("favs"));
 
     el.queueBtn.addEventListener("click", () => {
       const open = el.queue.hidden;
@@ -924,6 +1030,7 @@
       el.queueBtn.setAttribute("aria-label", open ? "Hide playlist" : "Show playlist");
       el.queueBtn.title = open ? "Hide playlist" : "Show playlist";
       document.body.classList.toggle("queue-open", open);
+      if (open) hydrateQueueImages();
     });
 
     el.scrub.addEventListener("pointerdown", onScrubStart);
@@ -934,6 +1041,11 @@
     window.addEventListener("keydown", onKey);
 
     el.cover.addEventListener("click", togglePlay);
+    el.cover.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      togglePlay();
+    });
     el.cover.addEventListener("error", () => {
       el.cover.classList.add("is-missing");
     });
@@ -963,21 +1075,34 @@
   }
 
   // ── Boot ─────────────────────────────────────
+  function scheduleClock() {
+    const now = updateClock() || new Date();
+    window.setTimeout(scheduleClock, msUntilNextMinute(now));
+  }
+
   async function init() {
-    updateClock();
-    setInterval(updateClock, 60_000);
-    reshuffle(false);
+    scheduleClock();
+    order = SONGS.map((_, songIndex) => songIndex);
     index = 0;
+    storageSet("ganesh_favs", JSON.stringify(Array.from(favorites)));
     updateMeta(currentSong(), { updateArtwork: false });
     bind();
+    buildQueue();
+    registerServiceWorker();
 
-    window.addEventListener("load", () => {
-      setTimeout(() => {
+    const startDecorations = () => {
+      const run = () => {
         spawnPetals();
         fakePresence();
-        buildQueue();
-      }, 2200);
-    }, { once: true });
+      };
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(run, { timeout: 2000 });
+      } else {
+        window.setTimeout(run, 1200);
+      }
+    };
+    if (document.readyState === "complete") startDecorations();
+    else window.addEventListener("load", startDecorations, { once: true });
 
     /* YouTube is intentionally loaded on first interaction to keep startup fast. */
   }

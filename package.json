@@ -2,5 +2,12 @@
   "name": "ganeshai",
   "version": "1.0.0",
   "private": true,
-  "description": "Ganeshotsav Radio — a Marathi Ganpati music experience."
+  "type": "module",
+  "description": "Ganeshotsav Radio — a Marathi Ganpati music experience.",
+  "scripts": {
+    "lint": "node scripts/lint.mjs",
+    "test": "node --test",
+    "build": "node scripts/build.mjs",
+    "check": "npm run lint && npm test && npm run build"
+  }
 }
