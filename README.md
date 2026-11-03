@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://mangeshraut712.github.io/ganeshai/"><img src="https://img.shields.io/badge/Live%20experience-GitHub%20Pages-c2410c?style=for-the-badge&logo=githubpages&logoColor=white" alt="Open the live GaneshAI experience" /></a>
   <a href="https://github.com/mangeshraut712/ganeshai"><img src="https://img.shields.io/badge/GitHub-ganeshai-171717?style=for-the-badge&logo=github&logoColor=white" alt="View GaneshAI on GitHub" /></a>
-  <img src="https://img.shields.io/badge/Buildless-static%20web-f59e0b?style=for-the-badge" alt="Buildless static web project" />
+  <img src="https://img.shields.io/badge/Static-web%20%2B%20_site%20build-f59e0b?style=for-the-badge" alt="Static web project with _site build" />
 </p>
 
 <p align="center">
@@ -102,7 +102,7 @@ The player control rail was rebuilt around a three-column primary-action grid so
 2. `styles.css` provides the full-viewport composition, liquid-glass surfaces, responsive layout, focus states, and reduced-motion behavior.
 3. `songs.js` contains the curated track metadata and YouTube video IDs.
 4. `app.js` loads the official YouTube IFrame API, maps its state into the custom player, and manages progress, queue selection, shuffle, keyboard controls, and playback errors.
-5. The site is served as static files from GitHub Pages. There is no application server, database, build pipeline, or local audio storage.
+5. The site is served as static files from GitHub Pages after a copy-to-`_site` build (`npm run build`). There is no application server, database, bundler, or local audio storage.
 
 ## Run locally
 
@@ -124,7 +124,9 @@ Opening `index.html` directly with a `file://` URL is not recommended because br
 | `styles.css` | Festival visual system, responsive rules, glass player, and accessibility states |
 | `app.js` | YouTube API integration and player interaction logic |
 | `songs.js` | 30-track Ganeshotsav queue and YouTube metadata |
-| `package.json` | Project metadata (no build step or runtime dependencies) |
+| `package.json` | Lint/test/build scripts (static `_site` copy; no runtime dependencies) |
+| `scripts/build.mjs` | Copies the curated runtime set into `_site` for Pages |
+| `radio-core.js`, `sw.js`, `test/` | Shared radio helpers, service worker, and unit tests |
 | `ganesh-background.webp` | Optimized full-bleed Ganesh festival background used by the live page |
 | `ganesh-background-mobile.webp` | Portrait crop optimized for narrow screens without changing the composition |
 | `ganesh-logo.webp` | Lightweight initial player artwork before the first YouTube thumbnail loads |
@@ -159,7 +161,7 @@ Keep the first entry as the desired opening track. Shuffle is handled in the UI 
 
 ## Deploy
 
-The project has no build step. GitHub Pages publishes the repository root from `main` (workflow: `.github/workflows/pages.yml`).
+GitHub Pages runs `npm run check` (lint, unit tests, and `npm run build`), then publishes the `_site` directory from `main` (workflow: `.github/workflows/pages.yml`). Do not point Pages at the repository root; the build omits multi-megabyte source PNGs that are kept only for future exports.
 
 The live site is [https://mangeshraut712.github.io/ganeshai/](https://mangeshraut712.github.io/ganeshai/).
 
