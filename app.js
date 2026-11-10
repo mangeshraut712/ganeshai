@@ -895,6 +895,7 @@ import {
       role: e.target?.getAttribute?.("role") || "",
       modalOpen: Boolean(el.helpModal?.open),
       editable: Boolean(e.target?.isContentEditable),
+      modifier: Boolean(e.ctrlKey || e.metaKey || e.altKey),
     });
     if (!action) return;
 

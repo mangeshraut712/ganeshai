@@ -233,3 +233,10 @@ test("service worker bypasses third-party media and updates same-origin code fro
     pageOrigin: PAGE,
   }), "bypass");
 });
+
+test("browser shortcuts with Ctrl, Cmd or Alt are left to the browser", () => {
+  assert.equal(shortcutAction({ key: "f", tagName: "BODY", modifier: true }), null);
+  assert.equal(shortcutAction({ key: "r", tagName: "BODY", modifier: true }), null);
+  assert.equal(shortcutAction({ key: "ArrowLeft", tagName: "BODY", modifier: true }), null);
+  assert.deepEqual(shortcutAction({ key: "f", tagName: "BODY" }), { type: "favorite" });
+});
