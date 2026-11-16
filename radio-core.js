@@ -194,7 +194,10 @@ export function shortcutAction({
   role = "",
   modalOpen = false,
   editable = false,
+  modifier = false,
 }) {
+  // Ctrl/Cmd/Alt combos belong to the browser (Cmd+F find, Ctrl+R reload, Cmd+S save).
+  if (modifier) return null;
   const tag = String(tagName).toLowerCase();
   const widget = String(role).toLowerCase();
   if (editable) return null;
