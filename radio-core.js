@@ -40,8 +40,10 @@ export function sanitizeCatalog(input) {
       ? song.youtubeId
       : (isYouTubeId(song.id) ? song.id : "");
     const id = isYouTubeId(song.id) ? song.id : youtubeId;
-    if (!id || !youtubeId || seen.has(id)) continue;
+    // Dedupe on the played video too, or one video can sit in the rotation twice.
+    if (!id || !youtubeId || seen.has(id) || seen.has(youtubeId)) continue;
     seen.add(id);
+    seen.add(youtubeId);
     songs.push({
       id,
       youtubeId,

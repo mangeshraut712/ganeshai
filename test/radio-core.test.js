@@ -32,6 +32,15 @@ function loadCatalog() {
   return sanitizeCatalog(sandbox.window.GANESH_SONGS);
 }
 
+test("catalog drops a second entry that plays the same video", () => {
+  const songs = sanitizeCatalog([
+    { id: "aaaaaaaaaaa", youtubeId: "bbbbbbbbbbb", title: "A", artist: "x" },
+    { id: "ccccccccccc", youtubeId: "bbbbbbbbbbb", title: "B", artist: "y" },
+    { id: "bbbbbbbbbbb", title: "C", artist: "z" },
+  ]);
+  assert.deepEqual(songs.map((song) => song.title), ["A"]);
+});
+
 test("catalog keeps the 30 curated tracks and drops unsafe ids", () => {
   const songs = loadCatalog();
   assert.equal(songs.length, 30);
