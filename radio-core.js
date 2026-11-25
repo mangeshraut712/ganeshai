@@ -262,3 +262,38 @@ export function classifyFetch({ requestUrl, method, pageOrigin }) {
   if (/\.(?:png|webp|jpe?g|gif|svg|ico)$/i.test(url.pathname)) return "cache-first";
   return "network-first";
 }
+
+/**
+ * Show a short status message, cancelling any hide timers from an earlier toast
+ * so a newer message is not hidden by the previous one.
+ */
+export function createToast(element, {
+  setTimeoutFn = setTimeout,
+  clearTimeoutFn = clearTimeout,
+  raf = (callback) => requestAnimationFrame(callback),
+  hideDelay = 280,
+  defaultDuration = 2600,
+} = {}) {
+  let hideClassTimer = 0;
+  let hiddenTimer = 0;
+
+  function show(message, duration = defaultDuration) {
+    if (!element) return;
+    element.hidden = false;
+    element.textContent = message;
+    raf(() => {
+      element.classList.add("show");
+    });
+    clearTimeoutFn(hideClassTimer);
+    clearTimeoutFn(hiddenTimer);
+    hideClassTimer = setTimeoutFn(() => {
+      element.classList.remove("show");
+      hiddenTimer = setTimeoutFn(() => {
+        element.hidden = true;
+      }, hideDelay);
+    }, duration);
+  }
+
+  return { show };
+}
+

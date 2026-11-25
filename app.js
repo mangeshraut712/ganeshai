@@ -23,6 +23,7 @@ import {
   sanitizeCatalog,
   shortcutAction,
   watchUrl,
+  createToast,
 } from "./radio-core.js";
 
 (() => {
@@ -114,7 +115,6 @@ import {
   let order = SONGS.map((_, i) => i);
   let progressTimer = null;
   let dragging = false;
-  let toastTimer = null;
   let skipTimer = null;
   let userStarted = false;
   let consecutiveErrors = 0;
@@ -125,18 +125,10 @@ import {
   // ── Helpers ──────────────────────────────────
   const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
 
+  const toast = createToast(el.toast);
+
   function showToast(msg, ms = 2600) {
-    if (!el.toast) return;
-    el.toast.hidden = false;
-    el.toast.textContent = msg;
-    requestAnimationFrame(() => el.toast.classList.add("show"));
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      el.toast.classList.remove("show");
-      setTimeout(() => {
-        el.toast.hidden = true;
-      }, 280);
-    }, ms);
+    toast.show(msg, ms);
   }
 
   function currentSong() {
