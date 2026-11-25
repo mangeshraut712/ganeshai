@@ -322,6 +322,8 @@ import {
       el.play.setAttribute("aria-label", "Loading playback");
     } else {
       delete el.play.dataset.buffering;
+      // Restore the Play/Pause name; a failed player load never reaches setPlayingUI.
+      syncTransportLabels();
     }
   }
 
