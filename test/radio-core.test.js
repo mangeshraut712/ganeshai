@@ -22,6 +22,7 @@ import {
   sanitizeCatalog,
   shortcutAction,
   watchUrl,
+  createToast,
 } from "../radio-core.js";
 
 const PAGE = "https://mangeshraut712.github.io";
@@ -248,4 +249,104 @@ test("browser shortcuts with Ctrl, Cmd or Alt are left to the browser", () => {
   assert.equal(shortcutAction({ key: "r", tagName: "BODY", modifier: true }), null);
   assert.equal(shortcutAction({ key: "ArrowLeft", tagName: "BODY", modifier: true }), null);
   assert.deepEqual(shortcutAction({ key: "f", tagName: "BODY" }), { type: "favorite" });
+});
+
+function fakeToastElement() {
+  const classes = new Set();
+  return {
+    hidden: true,
+    textContent: "",
+    classList: {
+      add: (name) => classes.add(name),
+      remove: (name) => classes.delete(name),
+      contains: (name) => classes.has(name),
+    },
+  };
+}
+
+function createClock() {
+  let now = 0;
+  let nextId = 1;
+  const timers = new Map();
+  function setTimeoutFn(fn, ms) {
+    const id = nextId++;
+    timers.set(id, { fn, due: now + Number(ms) });
+    return id;
+  }
+  function clearTimeoutFn(id) {
+    timers.delete(id);
+  }
+  function flush(ms) {
+    const target = now + ms;
+    while (true) {
+      let soonest = null;
+      for (const [id, timer] of timers) {
+        if (timer.due <= target && (soonest === null || timer.due < soonest.due)) {
+          soonest = { id, ...timer };
+        }
+      }
+      if (!soonest) {
+        now = target;
+        return;
+      }
+      now = soonest.due;
+      timers.delete(soonest.id);
+      soonest.fn();
+    }
+  }
+  return { setTimeoutFn, clearTimeoutFn, flush };
+}
+
+test("a later toast is not hidden by the previous toast's delayed hide", () => {
+  const el = fakeToastElement();
+  const clock = createClock();
+  const toast = createToast(el, {
+    setTimeoutFn: clock.setTimeoutFn,
+    clearTimeoutFn: clock.clearTimeoutFn,
+    raf: (callback) => callback(),
+    hideDelay: 280,
+  });
+
+  toast.show("first", 2600);
+  clock.flush(2600);
+  assert.equal(el.classList.contains("show"), false);
+  assert.equal(el.hidden, false);
+
+  toast.show("second", 2600);
+  assert.equal(el.hidden, false);
+  assert.equal(el.textContent, "second");
+  assert.equal(el.classList.contains("show"), true);
+
+  // The first toast's 280ms hide would fire here if it were not cancelled.
+  clock.flush(280);
+  assert.equal(el.hidden, false);
+  assert.equal(el.textContent, "second");
+  assert.equal(el.classList.contains("show"), true);
+
+  clock.flush(2600);
+  assert.equal(el.classList.contains("show"), false);
+  clock.flush(280);
+  assert.equal(el.hidden, true);
+});
+
+test("a single toast hides after its duration and fade", () => {
+  const el = fakeToastElement();
+  const clock = createClock();
+  const toast = createToast(el, {
+    setTimeoutFn: clock.setTimeoutFn,
+    clearTimeoutFn: clock.clearTimeoutFn,
+    raf: (callback) => callback(),
+    hideDelay: 280,
+  });
+  toast.show("only", 1000);
+  assert.equal(el.hidden, false);
+  assert.equal(el.textContent, "only");
+  clock.flush(999);
+  assert.equal(el.hidden, false);
+  assert.equal(el.classList.contains("show"), true);
+  clock.flush(1);
+  assert.equal(el.classList.contains("show"), false);
+  assert.equal(el.hidden, false);
+  clock.flush(280);
+  assert.equal(el.hidden, true);
 });
